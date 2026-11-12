@@ -10,6 +10,7 @@ import android.webkit.WebResourceResponse;
 import android.content.Intent;
 import android.net.Uri;
 
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.webkit.WebViewAssetLoader;
 
 public class MainActivity extends Activity {
@@ -41,14 +42,24 @@ public class MainActivity extends Activity {
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
                 String scheme = uri.getScheme();
+
                 if (scheme != null && (scheme.equals("tel") || scheme.equals("mailto"))) {
                     try { startActivity(new Intent(Intent.ACTION_VIEW, uri)); }
                     catch (Exception ignored) {}
                     return true;
                 }
-                if ("https".equals(scheme) && !"appassets.androidplatform.net".equals(uri.getHost())) {
-                    try { startActivity(new Intent(Intent.ACTION_VIEW, uri)); }
-                    catch (Exception ignored) {}
+
+                // Open OAuth/navigation in a Custom Tab and return to this activity
+                // only when the registered janbbait://auth/callback is reached.
+                if ("https".equalsIgnoreCase(scheme)
+                        && !"appassets.androidplatform.net".equalsIgnoreCase(uri.getHost())) {
+                    try {
+                        CustomTabsIntent tabs = new CustomTabsIntent.Builder().build();
+                        tabs.launchUrl(MainActivity.this, uri);
+                    } catch (Exception customTabError) {
+                        try { startActivity(new Intent(Intent.ACTION_VIEW, uri)); }
+                        catch (Exception ignored) {}
+                    }
                     return true;
                 }
                 return false;
