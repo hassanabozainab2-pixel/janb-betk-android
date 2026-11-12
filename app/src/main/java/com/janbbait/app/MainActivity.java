@@ -210,9 +210,14 @@ public class MainActivity extends Activity {
         handleIncomingLink(intent);
     }
 
+    private void loadLocalApp(String suffix) {
+        if (web == null) return;
+        web.loadUrl(LOCAL_APP_URL + (suffix == null ? "" : suffix));
+    }
+
     private void handleIncomingLink(Intent intent) {
         if (intent == null || intent.getData() == null) {
-            loadHostedHtml(APP_URL);
+            loadLocalApp("");
             return;
         }
         Uri uri = intent.getData();
@@ -223,24 +228,26 @@ public class MainActivity extends Activity {
         if ("https".equalsIgnoreCase(uri.getScheme())
                 && "hassanabozainab2-pixel.github.io".equalsIgnoreCase(uri.getHost())) {
             String businessId = uri.getQueryParameter("business");
-            String targetUrl = APP_URL;
+            String suffix = "";
             if (businessId != null && businessId.matches("[0-9a-fA-F-]{36}")) {
-                targetUrl += "?business=" + Uri.encode(businessId);
+                suffix = "?business=" + Uri.encode(businessId);
             }
-            loadHostedHtml(targetUrl);
+            loadLocalApp(suffix);
+            return;
         }
+        loadLocalApp("");
     }
 
     private void loadAuthCallback(Intent intent) {
         if (intent == null || intent.getData() == null || web == null) return;
         Uri uri = intent.getData();
         if (!"janbbait".equals(uri.getScheme()) || !"auth".equals(uri.getHost())) return;
-        String callbackUrl = APP_URL;
+        String callbackUrl = "";
         String query = uri.getEncodedQuery();
         String fragment = uri.getEncodedFragment();
         if (query != null && !query.isEmpty()) callbackUrl += "?" + query;
         if (fragment != null && !fragment.isEmpty()) callbackUrl += "#" + fragment;
-        loadHostedHtml(callbackUrl);
+        loadLocalApp(callbackUrl);
     }
 
     @Override
