@@ -47,7 +47,7 @@ jobs:
 
       - name: Build signed release APK
         env:
-          SIGNING_STORE_FILE: app/janbbait-release.jks
+          SIGNING_STORE_FILE: janbbait-release.jks
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
