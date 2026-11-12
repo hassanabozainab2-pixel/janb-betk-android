@@ -1,6 +1,7 @@
 package com.janbbait.app;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.webkit.WebSettings;
@@ -139,6 +140,45 @@ public class MainActivity extends Activity {
                 if (connection != null) connection.disconnect();
             }
         });
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onBackPressed() {
+        if (web == null) {
+            showExitConfirmation();
+            return;
+        }
+
+        // Close an open in-app dialog/menu before navigating away.
+        web.evaluateJavascript(
+                "(function(){"
+                + "var ids=['featuredDetailModal','adModal','choiceModal','modal'];"
+                + "for(var i=0;i<ids.length;i++){"
+                + "var el=document.getElementById(ids[i]);"
+                + "if(el && el.classList.contains('show')){el.classList.remove('show');return 'handled';}"
+                + "}"
+                + "var drop=document.getElementById('accountDropdown');"
+                + "if(drop && !drop.classList.contains('hidden')){drop.classList.add('hidden');return 'handled';}"
+                + "return 'no';"
+                + "})()",
+                value -> {
+                    if ("\\"handled\\"".equals(value)) return;
+                    if (web != null && web.canGoBack()) {
+                        web.goBack();
+                    } else {
+                        showExitConfirmation();
+                    }
+                });
+    }
+
+    private void showExitConfirmation() {
+        new AlertDialog.Builder(this)
+                .setTitle("الخروج من جنب بيتك")
+                .setMessage("هل تريد الخروج من التطبيق؟")
+                .setNegativeButton("إلغاء", (dialog, which) -> dialog.dismiss())
+                .setPositiveButton("خروج", (dialog, which) -> finish())
+                .show();
     }
 
     @Override
