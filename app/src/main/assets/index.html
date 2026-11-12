@@ -116,6 +116,11 @@ document.getElementById('featuredDetailClose').onclick=()=>document.getElementBy
 document.getElementById('featuredDetailModal').onclick=e=>{if(e.target.id==='featuredDetailModal')e.currentTarget.classList.remove('show');};
 async function loadFeaturedAds(){
  const box=document.getElementById('featuredAds');
+ const demoAds=[
+  {slot:1,title:'سوق البيت ماركت',description:'كل احتياجات البيت والبقالة في مكان واحد',image:'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=480&q=80'},
+  {slot:2,title:'مذاق البلد للمأكولات',description:'وجبات شهية وتجهيز طلبات المناسبات',image:'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=480&q=80'},
+  {slot:3,title:'الأمان للصيانة المنزلية',description:'خدمات كهرباء وسباكة وصيانة للأجهزة',image:'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=480&q=80'}
+ ];
  try{
   const {data,error}=await sb.from('featured_ads').select('id,slot,title,description,phone,whatsapp,media_path,media_type').eq('status','active').lte('starts_at',new Date().toISOString()).gt('ends_at',new Date().toISOString()).order('slot');
   if(error)throw error;
@@ -123,13 +128,26 @@ async function loadFeaturedAds(){
   const bySlot=new Map(featuredRows.map(x=>[x.slot,x]));
   for(let slot=1;slot<=3;slot++){
    const x=bySlot.get(slot),el=document.createElement('article');el.className='ad-card';
-   if(!x){el.innerHTML='<div class="avatar">⭐</div><div><div class="ad-slot">المساحة الإعلانية '+slot+'</div><b>إعلانك هنا</b><div class="muted">تواصل مع الإدارة لحجز مساحة مميزة</div></div>';box.appendChild(el);continue;}
+   if(!x){
+    const demo=demoAds[slot-1];
+    el.innerHTML='<img loading="lazy" src="'+demo.image+'" alt="صورة توضيحية لنشاط '+esc(demo.title)+'"><div style="min-width:0;flex:1"><div class="ad-slot">عرض تجريبي · المساحة '+slot+'</div><h3>'+esc(demo.title)+'</h3><div class="muted">'+esc(demo.description)+'</div><div class="smallnote">نموذج للعرض الجمالي فقط — ليس إعلانًا حقيقيًا</div></div>';
+    box.appendChild(el);continue;
+   }
    const url=sb.storage.from('janb-media').getPublicUrl(x.media_path).data.publicUrl;
    const media=x.media_type==='video'?'<video controls playsinline src="'+esc(url)+'"></video>':'<img loading="lazy" src="'+esc(url)+'" alt="">';
-   const wa=(x.whatsapp||x.phone||'').replace(/\D/g,'').replace(/^0/,'20');
-   el.innerHTML=media+'<div style="min-width:0;flex:1"><div class="ad-slot">إعلان مميز · '+slot+'</div><h3>'+esc(x.title)+'</h3><div class="muted">'+esc(x.description)+'</div><div class="smallnote">اضغط لعرض تفاصيل الإعلان</div></div>';el.setAttribute('role','button');el.setAttribute('tabindex','0');el.onclick=()=>showFeaturedDetails(x);el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showFeaturedDetails(x);}};box.appendChild(el);
+   el.innerHTML=media+'<div style="min-width:0;flex:1"><div class="ad-slot">إعلان مميز · '+slot+'</div><h3>'+esc(x.title)+'</h3><div class="muted">'+esc(x.description)+'</div><div class="smallnote">اضغط لعرض تفاصيل الإعلان</div></div>';
+   el.setAttribute('role','button');el.setAttribute('tabindex','0');el.onclick=()=>showFeaturedDetails(x);el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showFeaturedDetails(x);}};
+   box.appendChild(el);
   }
- }catch(e){box.innerHTML='<div class="empty">الإعلانات المميزة غير متاحة حاليًا.</div>';console.error(e);}
+ }catch(e){
+  box.innerHTML='';
+  demoAds.forEach(demo=>{
+   const el=document.createElement('article');el.className='ad-card';
+   el.innerHTML='<img loading="lazy" src="'+demo.image+'" alt="صورة توضيحية لنشاط '+esc(demo.title)+'"><div style="min-width:0;flex:1"><div class="ad-slot">عرض تجريبي · المساحة '+demo.slot+'</div><h3>'+esc(demo.title)+'</h3><div class="muted">'+esc(demo.description)+'</div><div class="smallnote">نموذج للعرض الجمالي فقط — ليس إعلانًا حقيقيًا</div></div>';
+   box.appendChild(el);
+  });
+  console.error(e);
+ }
 }
 async function loadCloudListings(){
  const status=document.getElementById('connectionStatus');
