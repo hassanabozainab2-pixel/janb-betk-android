@@ -5,14 +5,41 @@ plugins {
 dependencies {
     implementation 'androidx.webkit:webkit:1.14.0'
 }
+
+def signingStoreFile = System.getenv("SIGNING_STORE_FILE")
+def signingStorePassword = System.getenv("SIGNING_STORE_PASSWORD")
+def signingKeyAlias = System.getenv("SIGNING_KEY_ALIAS")
+def signingKeyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+
 android {
     namespace 'com.janbbait.app'
     compileSdk 35
+
     defaultConfig {
         applicationId 'com.janbbait.app'
         minSdk 23
         targetSdk 35
         versionCode 1
         versionName '1.0'
+    }
+
+    signingConfigs {
+        release {
+            if (signingStoreFile && signingStorePassword && signingKeyAlias && signingKeyPassword) {
+                storeFile file(signingStoreFile)
+                storePassword signingStorePassword
+                keyAlias signingKeyAlias
+                keyPassword signingKeyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            if (signingStoreFile && signingStorePassword && signingKeyAlias && signingKeyPassword) {
+                signingConfig signingConfigs.release
+            }
+            minifyEnabled false
+        }
     }
 }
