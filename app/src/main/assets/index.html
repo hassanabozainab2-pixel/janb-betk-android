@@ -30,7 +30,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 <header><div class="top"><div><div class="brand">جنب بيتك</div><div class="tag">كل اللي تحتاجه حواليك</div></div><div class="pill" id="connectionStatus">إسنا · جاري الاتصال</div></div><div class="search"><input id="q" placeholder="بتدور على إيه؟ محل، صنايعي، خدمة..." aria-label="بحث"><button id="searchBtn">بحث</button></div></header>
 <main>
 <div class="panel" id="accountPanel"><h3>حسابك</h3><div id="accountState" class="smallnote">سجّل الدخول لإضافة نشاطك ومتابعة طلباتك.</div><div class="rowbtn"><button id="loginBtn">دخول / إنشاء حساب</button><button id="logoutBtn" class="hidden">تسجيل خروج</button><button id="adminBtn" class="hidden">لوحة المدير</button><button id="adRequestBtn" class="hidden">اطلب إعلانًا مميزًا</button></div></div>
-<div id="adminPanel" class="panel hidden"><h3>لوحة المدير — طلبات الدفع</h3><div id="adminPayments" class="smallnote">لا توجد طلبات محملة.</div></div>
+<div id="adminPanel" class="panel hidden"><h3>لوحة المدير — طلبات الدفع والإعدادات</h3><div class="field"><label>رقم محفظة اتصالات كاش</label><input id="adminCashNumber" inputmode="tel" placeholder="أدخل رقم المحفظة"></div><div class="rowbtn"><button id="saveCashNumber">حفظ رقم المحفظة</button></div><hr><div id="adminPayments" class="smallnote">لا توجد طلبات محملة.</div></div>
 <section id="featuredSection"><div class="section-head"><h2>إعلانات مميزة</h2><span class="muted">مساحات إعلانية</span></div><div id="featuredAds" class="cards"><div class="empty">جاري تحميل الإعلانات...</div></div></section>
 <div class="section-head"><h2>دور على اللي محتاجه</h2><span class="muted">اختار القسم</span></div>
 <div class="categories" id="categories">
@@ -170,6 +170,15 @@ async function adminPanel(){
  if(currentUser?.app_metadata?.role!=='admin'){alert('هذه الصفحة للمدير فقط.');return;}
  const panel=document.getElementById('adminPanel'),list=document.getElementById('adminPayments');
  panel.classList.remove('hidden');list.textContent='جاري تحميل الطلبات...';
+ const settings=await sb.from('app_settings').select('value').eq('key','etisalat_cash_number').maybeSingle();
+ document.getElementById('adminCashNumber').value=settings.data?.value?.value||'';
+ document.getElementById('saveCashNumber').onclick=async()=>{
+  const value=document.getElementById('adminCashNumber').value.trim();
+  if(!value)return alert('اكتب رقم المحفظة أولًا.');
+  const saved=await sb.from('app_settings').upsert({key:'etisalat_cash_number',value:{value},updated_at:new Date().toISOString()});
+  if(saved.error)return alert('لم يتم الحفظ: '+saved.error.message);
+  alert('تم حفظ رقم المحفظة.');
+ };
  const {data:payments,error}=await sb.from('payment_requests').select('id,amount_egp,receipt_path,payment_type,status,created_at,business_id,subscription_id').eq('status','pending').order('created_at');
  if(error){list.textContent='تعذر تحميل الطلبات: '+error.message;return;}
  if(!payments?.length){list.textContent='لا توجد طلبات دفع معلقة.';return;}
