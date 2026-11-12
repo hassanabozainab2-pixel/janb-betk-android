@@ -179,7 +179,7 @@ async function adminPanel(){
   if(saved.error)return alert('لم يتم الحفظ: '+saved.error.message);
   alert('تم حفظ رقم المحفظة.');
  };
- const {data:payments,error}=await sb.from('payment_requests').select('id,amount_egp,receipt_path,payment_type,status,created_at,business_id,subscription_id').eq('status','pending').order('created_at');
+ const {data:payments,error}=await sb.from('payment_requests').select('id,owner_id,amount_egp,receipt_path,payment_type,status,created_at,business_id,subscription_id,featured_ad_id').eq('status','pending').order('created_at');
  if(error){list.textContent='تعذر تحميل الطلبات: '+error.message;return;}
  if(!payments?.length){list.textContent='لا توجد طلبات دفع معلقة.';return;}
  list.innerHTML='';
