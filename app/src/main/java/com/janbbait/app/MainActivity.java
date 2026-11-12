@@ -104,7 +104,7 @@ public class MainActivity extends Activity {
         handleIncomingLink(getIntent());
     }
 
-    private void loadHostedHtml(String targetUrl) {
+    private void loadHostedHtml(String targetUrl, String fallbackSuffix) {
         loader.execute(() -> {
             HttpURLConnection connection = null;
             try {
@@ -132,7 +132,7 @@ public class MainActivity extends Activity {
                 web.post(() -> web.loadDataWithBaseURL(
                         targetUrl, page, "text/html", "UTF-8", null));
             } catch (Exception error) {
-                web.post(() -> web.loadUrl(LOCAL_APP_URL));
+                web.post(() -> web.loadUrl(LOCAL_APP_URL + (fallbackSuffix == null ? "" : fallbackSuffix)));
             } finally {
                 if (connection != null) connection.disconnect();
             }
@@ -217,7 +217,7 @@ public class MainActivity extends Activity {
 
     private void handleIncomingLink(Intent intent) {
         if (intent == null || intent.getData() == null) {
-            loadLocalApp("");
+            loadHostedHtml(APP_URL + "?app=1", "");
             return;
         }
         Uri uri = intent.getData();
@@ -232,10 +232,11 @@ public class MainActivity extends Activity {
             if (businessId != null && businessId.matches("[0-9a-fA-F-]{36}")) {
                 suffix = "?business=" + Uri.encode(businessId);
             }
-            loadLocalApp(suffix);
+            String hostedSuffix = suffix.isEmpty() ? "" : "&" + suffix.substring(1);
+            loadHostedHtml(APP_URL + "?app=1" + hostedSuffix, suffix);
             return;
         }
-        loadLocalApp("");
+        loadHostedHtml(APP_URL + "?app=1", "");
     }
 
     private void loadAuthCallback(Intent intent) {
@@ -247,7 +248,10 @@ public class MainActivity extends Activity {
         String fragment = uri.getEncodedFragment();
         if (query != null && !query.isEmpty()) callbackUrl += "?" + query;
         if (fragment != null && !fragment.isEmpty()) callbackUrl += "#" + fragment;
-        loadLocalApp(callbackUrl);
+        String hostedUrl = APP_URL + "?app=1";
+        if (query != null && !query.isEmpty()) hostedUrl += "&" + query;
+        if (fragment != null && !fragment.isEmpty()) hostedUrl += "#" + fragment;
+        loadHostedHtml(hostedUrl, callbackUrl);
     }
 
     @Override
