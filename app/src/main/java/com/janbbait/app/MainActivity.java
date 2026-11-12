@@ -143,13 +143,18 @@ public class MainActivity extends Activity {
     @SuppressWarnings("deprecation")
     public void onBackPressed() {
         if (web == null) {
-            showExitConfirmation();
+            finish();
             return;
         }
 
-        // Close an open in-app dialog/menu before navigating away.
+        // Close the deepest in-app screen before leaving the Activity.
         web.evaluateJavascript(
                 "(function(){"
+                + "var pages=['businessDetailPage','featuredDetailPage','categoryPage'];"
+                + "for(var i=0;i<pages.length;i++){"
+                + "var page=document.getElementById(pages[i]);"
+                + "if(page && page.classList.contains('show')){page.classList.remove('show');return 'handled';}"
+                + "}"
                 + "var ids=['featuredDetailModal','adModal','choiceModal','modal'];"
                 + "for(var i=0;i<ids.length;i++){"
                 + "var el=document.getElementById(ids[i]);"
@@ -164,7 +169,7 @@ public class MainActivity extends Activity {
                     if (web != null && web.canGoBack()) {
                         web.goBack();
                     } else {
-                        showExitConfirmation();
+                        finish();
                     }
                 });
     }
