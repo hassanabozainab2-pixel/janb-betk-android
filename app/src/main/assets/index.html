@@ -56,6 +56,8 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 
  .request-kind{display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;min-height:105px;padding:14px;border:1px solid #d8e8df;border-radius:15px;background:#f4faf6;color:#126b4d;font:inherit;font-size:14px;font-weight:850}.request-kind b{font-size:24px;color:#a27617}
 .admin-dashboard{border:1px solid #d8e8df;border-radius:18px;padding:15px;margin:10px 0 20px;background:#fff}.admin-dashboard h2{margin:0 0 7px;color:var(--green);font-size:21px}.admin-tabs{display:flex;gap:7px;overflow:auto;padding:10px 0;margin:8px 0;border-bottom:1px solid var(--line)}.admin-tab{white-space:nowrap;border:1px solid var(--line);border-radius:20px;background:#f7faf8;padding:9px 13px;font:inherit;font-size:12px;font-weight:800}.admin-tab.active{background:var(--green);color:#fff;border-color:var(--green)}.admin-section{padding:10px 0}.admin-section h3{margin:5px 0 14px;font-size:17px}.admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.admin-grid .full{grid-column:1/-1}.admin-editor{padding:13px;background:#f7faf8;border:1px solid var(--line);border-radius:14px;margin-top:13px}.admin-list{display:grid;gap:9px;margin-top:12px}.admin-row{display:flex;justify-content:space-between;align-items:center;gap:9px;padding:11px;border:1px solid var(--line);border-radius:12px;background:#fff}.admin-row strong{display:block;font-size:13px}.admin-row small{color:var(--muted);font-size:11px}.admin-row .rowbtn{margin:0}.admin-row button,.admin-dashboard .rowbtn button{font:inherit;font-size:12px}.admin-dashboard .secondary{background:#eef2ef;color:#34443b}.admin-dashboard input,.admin-dashboard select,.admin-dashboard textarea{width:100%;border:1px solid #dce5df;border-radius:10px;padding:10px;font:inherit;background:#fff;color:var(--ink)}.admin-dashboard input[type=color]{height:43px;padding:4px}.admin-dashboard label{font-size:12px;font-weight:700}.admin-dashboard .field{display:grid;gap:5px}.admin-dashboard .rowbtn{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.admin-dashboard .rowbtn button{padding:10px 13px;border:0;border-radius:10px;background:var(--green);color:white;font-weight:800}.admin-dashboard h4{margin:14px 0 10px}@media(max-width:420px){.admin-grid{grid-template-columns:1fr}.admin-grid .full{grid-column:auto}.admin-row{align-items:flex-start;flex-direction:column}}
+
+.product-search-panel{border:1px solid #d9e9df;background:#fff;margin-top:0}.product-search-title{font-size:18px;font-weight:900;color:#126b4d;margin:0 0 5px}.product-search-list{display:grid;gap:10px;margin-top:12px}.product-result{display:flex;gap:11px;align-items:center;padding:11px;border:1px solid #e3ebe5;border-radius:15px;background:#fff}.product-result img,.product-result .product-placeholder{width:70px;height:70px;flex:0 0 70px;object-fit:cover;border-radius:12px;background:#eff5f0}.product-placeholder{display:grid;place-items:center;font-size:30px}.product-result-main{min-width:0;flex:1}.product-result-name{font-size:14px;font-weight:900;color:#1e3c2d}.product-result-meta{font-size:11px;color:#6b7771;margin-top:4px}.product-result-price{font-size:17px;font-weight:950;color:#a27617;margin-top:4px}.best-price{display:inline-block;margin-top:5px;background:#e8f7ed;color:#087b42;border-radius:20px;padding:4px 8px;font-size:10px;font-weight:900}.product-result-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.product-result-actions a,.product-result-actions button{display:inline-block;text-decoration:none;border:0;border-radius:9px;padding:8px 10px;font:inherit;font-size:11px;font-weight:850;background:#e8f4ee;color:#126b4d}.product-result-actions a.order-now{background:#087b42;color:white}.product-result-actions button{cursor:pointer}
 </style>
 </head>
 <body>
@@ -71,8 +73,9 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
  <div class="login-foot">أهلاً بك في جنب بيتك</div>
 </section>
 <div id="appShell" class="hidden">
-<header><div class="top"><div class="brand-area"><div><div class="brand">جنب بيتك</div><div class="tag">كل اللي تحتاجه حواليك</div></div><div class="account-menu"><button class="account-toggle" id="accountToggle" type="button">حسابك ▾</button><div class="account-dropdown hidden" id="accountDropdown"><div id="accountState" class="smallnote">سجّل الدخول لإضافة نشاطك ومتابعة طلباتك.</div><div class="rowbtn"><button id="logoutBtn" class="hidden">تسجيل خروج</button><button id="adminBtn" class="hidden">لوحة المدير</button><button id="reviewRequestsBtn" class="hidden">📋 مراجعة الطلبات</button></div></div></div></div><div class="pill" id="connectionStatus">إسنا · جاري الاتصال</div></div><div class="refresh-row"><button id="refreshAppBtn" class="refresh-btn" type="button">↻ تحديث التطبيق</button><span id="refreshStatus" class="refresh-status">تحديث الإعلانات والأنشطة الجديدة</span></div><div class="search"><input id="q" placeholder="بتدور على إيه؟ محل، صنايعي، خدمة..." aria-label="بحث"><button id="searchBtn">بحث</button></div></header>
+<header><div class="top"><div class="brand-area"><div><div class="brand">جنب بيتك</div><div class="tag">كل اللي تحتاجه حواليك</div></div><div class="account-menu"><button class="account-toggle" id="accountToggle" type="button">حسابك ▾</button><div class="account-dropdown hidden" id="accountDropdown"><div id="accountState" class="smallnote">سجّل الدخول لإضافة نشاطك ومتابعة طلباتك.</div><div class="rowbtn"><button id="logoutBtn" class="hidden">تسجيل خروج</button><button id="ownerProductsBtn" class="hidden">🛍️ إدارة منتجات محلك</button><button id="adminBtn" class="hidden">لوحة المدير</button><button id="reviewRequestsBtn" class="hidden">📋 مراجعة الطلبات</button></div></div></div></div><div class="pill" id="connectionStatus">إسنا · جاري الاتصال</div></div><div class="refresh-row"><button id="refreshAppBtn" class="refresh-btn" type="button">↻ تحديث التطبيق</button><span id="refreshStatus" class="refresh-status">تحديث الإعلانات والأنشطة الجديدة</span></div><div class="search"><input id="q" placeholder="بتدور على إيه؟ محل، صنايعي، خدمة..." aria-label="بحث"><button id="searchBtn">بحث</button></div></header>
 <main>
+<div id="productSearchResults" class="panel hidden product-search-panel"></div>
 <div id="requestReviewHub" class="panel hidden admin-dashboard"><h2>📋 مراجعة الطلبات</h2><p class="smallnote">اختار نوع الطلب اللي عايز تراجعه.</p><div class="admin-grid"><button type="button" class="request-kind" data-kind="subscription">🏪 طلبات إضافة الأنشطة <b id="businessRequestCount">…</b></button><button type="button" class="request-kind" data-kind="featured_ad">⭐ طلبات الإعلانات المميزة <b id="adRequestCount">…</b></button></div><div class="rowbtn"><button type="button" id="showAllRequests">عرض كل الطلبات</button></div><div id="requestCategoryResults" class="smallnote"></div></div>
 <div id="adminPanel" class="panel hidden admin-dashboard">
 <h2>🛠️ مركز إدارة جنب بيتك</h2><p class="smallnote">تحكم شامل في المحتوى والتصميم والأنشطة والمنتجات والإعلانات وإعدادات التطبيق. التغييرات تُحفظ على السحابة.</p>
@@ -108,6 +111,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 <section class="admin-section hidden" id="admin-ads"><h3>⭐ إدارة الإعلانات المميزة</h3><div id="adminAdList" class="admin-list">جاري التحميل...</div></section>
 <section class="admin-section hidden" id="admin-payments"><h3>💳 إعدادات الدفع وطلبات المراجعة</h3><div class="field"><label>رقم محفظة اتصالات كاش</label><input id="adminCashNumber" inputmode="tel" placeholder="أدخل رقم المحفظة"></div><div class="rowbtn"><button id="saveCashNumber">حفظ رقم المحفظة</button></div><hr><div id="adminPayments" class="smallnote">لا توجد طلبات محملة.</div></section>
 </div>
+<section id="ownerProductsPanel" class="panel hidden admin-dashboard"><h2>🛍️ إدارة منتجات محلك</h2><p class="smallnote">أضف منتجاتك وأسعارك، وعدّل أو احذف منتجات نشاطك فقط. المنتجات المتاحة تظهر للزوار في البحث والمقارنة.</p><div class="field"><label>اختار نشاطك</label><select id="ownerProductBusiness"></select></div><div class="rowbtn"><button type="button" id="ownerNewProduct">＋ إضافة منتج أو عرض</button><button type="button" id="ownerReloadProducts" class="secondary">تحديث</button></div><div id="ownerProductList" class="admin-list">جاري تحميل أنشطتك...</div><div id="ownerProductEditor" class="admin-editor hidden"><h4>بيانات المنتج</h4><input id="ownerEditProductId" type="hidden"><div class="admin-grid"><div class="field"><label>اسم المنتج</label><input id="ownerEditProductName" placeholder="مثال: زيت عباد الشمس"></div><div class="field"><label>السعر بالجنيه</label><input id="ownerEditProductPrice" type="number" min="0" step="0.01"></div><div class="field"><label>الوحدة أو الحجم</label><input id="ownerEditProductUnit" placeholder="عبوة 1 لتر / كيلو / قطعة"></div><div class="field full"><label>صورة المنتج من الموبايل (اختياري)</label><input id="ownerEditProductImage" type="hidden"><input id="ownerEditProductImageFile" type="file" accept="image/*"><div class="smallnote" id="ownerEditProductImageStatus">اختار صورة من معرض الموبايل ثم اضغط رفع الصورة.</div><button type="button" id="ownerUploadProductImage" class="secondary">رفع الصورة من الجهاز</button></div><div class="field full"><label>تفاصيل المنتج أو العرض</label><textarea id="ownerEditProductDescription" rows="3"></textarea></div><label><input id="ownerEditProductAvailable" type="checkbox" checked> إظهار المنتج للزوار</label></div><div class="rowbtn"><button type="button" id="ownerSaveProduct">حفظ المنتج</button><button type="button" id="ownerCancelProduct" class="secondary">إلغاء</button></div></div></section>
 <section id="featuredSection"><div class="section-head featured-head"><h2>⭐ إعلانات مميزة</h2><button type="button" class="featured-request-btn" id="featuredRequestBtn">اطلب إعلانك هنا</button></div><div class="muted" style="margin:-5px 2px 11px">عروض وخدمات مميزة من المحلات وأصحاب الأنشطة</div><div id="featuredAds" class="cards"><div class="empty">جاري تحميل الإعلانات...</div></div></section>
 <div class="section-head"><h2>دور على اللي محتاجه</h2><span class="muted">اختار القسم</span></div>
 <div class="categories" id="categories">
@@ -140,7 +144,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 const SUPABASE_URL='https://qedaojphnxwoptitfzzk.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_VyDwQNzQQN9wj8iUqu1_DQ_IN7AgxRM';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-let cloudRows=[],selectedType='الكل',selectedCategory='',currentUser=null,featuredRows=[];
+let cloudRows=[],selectedType='الكل',selectedCategory='',currentUser=null,featuredRows=[],ownerBusinesses=[],productSearchTimer=null;
 const cards=document.getElementById('cards'),modal=document.getElementById('modal');
 const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function showFeaturedDetails(x){
@@ -276,7 +280,104 @@ function render(){
   el.addEventListener('click',e=>{if(e.target.closest('a'))return;openBusinessDetail(x.id);});target.appendChild(el);
  });
 }
-document.getElementById('searchBtn').onclick=render;document.getElementById('q').addEventListener('input',render);
+document.getElementById('searchBtn').onclick=()=>{render();runProductSearch();};document.getElementById('q').addEventListener('input',()=>{render();scheduleProductSearch();});document.getElementById('q').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();runProductSearch();}});
+async function runProductSearch(){
+ const input=document.getElementById('q'),box=document.getElementById('productSearchResults'),term=input.value.trim();
+ if(!term){box.classList.add('hidden');box.innerHTML='';return;}
+ box.classList.remove('hidden');box.innerHTML='<div class="product-search-title">🔎 بنبحث عن '+esc(term)+'</div><div class="smallnote">جاري مقارنة المنتجات والأسعار...</div>';
+ try{
+  const {data:products,error}=await sb.from('business_products').select('id,business_id,name,description,price,unit,image_path').eq('is_available',true).ilike('name','%'+term+'%').limit(100);
+  if(error)throw error;
+  const ids=[...new Set((products||[]).map(p=>p.business_id).filter(Boolean))];
+  if(!ids.length){box.innerHTML='<div class="product-search-title">نتائج البحث عن: '+esc(term)+'</div><div class="empty">ملقيناش منتج مسجل بالاسم ده حاليًا. جرّب كلمة تانية أو أضف المنتج من إدارة المحل.</div>';return;}
+  const {data:shops,error:shopsError}=await sb.from('businesses').select('id,name,phone,whatsapp,address').in('id',ids).eq('status','approved');
+  if(shopsError)throw shopsError;
+  const shopMap=new Map((shops||[]).map(x=>[x.id,x]));
+  const rows=(products||[]).filter(p=>shopMap.has(p.business_id)).map(p=>({...p,shop:shopMap.get(p.business_id)}));
+  rows.sort((a,b)=>{const ap=a.price===null||a.price===undefined?Infinity:Number(a.price),bp=b.price===null||b.price===undefined?Infinity:Number(b.price);return ap-bp;});
+  const groups=new Map();
+  rows.forEach(p=>{const key=(String(p.name||'').trim().toLocaleLowerCase('ar')+'|'+String(p.unit||'').trim().toLocaleLowerCase('ar'));if(!groups.has(key))groups.set(key,[]);groups.get(key).push(p);});
+  const ordered=[...groups.values()].flatMap(g=>g.sort((a,b)=>(a.price??Infinity)-(b.price??Infinity)));
+  box.innerHTML='<div class="product-search-title">نتائج البحث عن: '+esc(term)+'</div><div class="smallnote">الأسعار مرتبة من الأقل للأعلى، وقارن نفس المنتج ونفس الحجم.</div><div class="product-search-list"></div>';
+  const list=box.querySelector('.product-search-list');
+  ordered.forEach((p,index)=>{
+   const wa=String(p.shop.whatsapp||p.shop.phone||'').replace(/\D/g,'').replace(/^0/,'20');
+   const message='السلام عليكم، عايز أطلب '+p.name+(p.unit?' ('+p.unit+')':'')+' من '+p.shop.name+'. السعر الظاهر '+(p.price??'غير محدد')+' جنيه. هل المنتج متوفر؟';
+   const orderUrl=wa?'https://wa.me/'+wa+'?text='+encodeURIComponent(message):'';
+   const image=p.image_path?sb.storage.from('business-products').getPublicUrl(p.image_path).data.publicUrl:'';
+   const price=p.price===null||p.price===undefined?'السعر عند الاستفسار':Number(p.price).toLocaleString('ar-EG')+' جنيه';
+   const card=document.createElement('article');card.className='product-result';
+   card.innerHTML=(image?'<img src="'+esc(image)+'" alt="'+esc(p.name)+'" loading="lazy">':'<div class="product-placeholder">🛒</div>')+'<div class="product-result-main"><div class="product-result-name">'+esc(p.name)+'</div><div class="product-result-meta">'+esc(p.shop.name)+' · '+esc(p.shop.address||'إسنا')+(p.unit?' · '+esc(p.unit):'')+'</div><div class="product-result-price">'+price+'</div>'+(index===0&&p.price!==null&&p.price!==undefined?'<span class="best-price">أقل سعر بين النتائج</span>':'')+'<div class="product-result-actions">'+(orderUrl?'<a class="order-now" target="_blank" rel="noopener" href="'+esc(orderUrl)+'">اطلب الآن عبر واتساب</a>':'<span class="smallnote">لا يوجد رقم واتساب للمحل</span>')+'<button type="button" class="view-shop">عرض المحل</button></div></div>';
+   card.querySelector('.view-shop').onclick=()=>openBusinessDetail(p.business_id);list.appendChild(card);
+  });
+ }catch(e){console.error('Product search failed',e);box.innerHTML='<div class="product-search-title">تعذر البحث</div><div class="empty">حصلت مشكلة في تحميل الأسعار: '+esc(e.message||'حاول مرة أخرى')+'</div>';}
+}
+function scheduleProductSearch(){clearTimeout(productSearchTimer);const q=document.getElementById('q').value.trim();if(!q){document.getElementById('productSearchResults').classList.add('hidden');document.getElementById('productSearchResults').innerHTML='';return;}productSearchTimer=setTimeout(runProductSearch,450);}
+async function loadOwnerBusinesses(){
+ const button=document.getElementById('ownerProductsBtn'),select=document.getElementById('ownerProductBusiness');
+ if(!currentUser){ownerBusinesses=[];button.classList.add('hidden');return;}
+ const {data,error}=await sb.from('businesses').select('id,name,status').eq('owner_id',currentUser.id).order('name');
+ if(error){console.error('Owner businesses load failed',error);ownerBusinesses=[];button.classList.add('hidden');return;}
+ ownerBusinesses=data||[];button.classList.toggle('hidden',!ownerBusinesses.length);
+ if(select){select.innerHTML=ownerBusinesses.map(b=>'<option value="'+b.id+'">'+esc(b.name)+(b.status==='approved'?'':' (قيد المراجعة)')+'</option>').join('');}
+ if(ownerBusinesses.length)await loadOwnerProducts();
+}
+async function openOwnerProducts(){
+ document.getElementById('accountDropdown').classList.add('hidden');
+ if(!ownerBusinesses.length){alert('لا يوجد نشاط مرتبط بحسابك حاليًا.');return;}
+ document.getElementById('adminPanel').classList.add('hidden');
+ document.getElementById('requestReviewHub').classList.add('hidden');
+ document.getElementById('ownerProductsPanel').classList.remove('hidden');
+ await loadOwnerProducts();
+ document.getElementById('ownerProductsPanel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function loadOwnerProducts(){
+ const businessId=document.getElementById('ownerProductBusiness').value,box=document.getElementById('ownerProductList');
+ if(!businessId){box.textContent='لا يوجد نشاط مرتبط بحسابك.';return;}
+ box.textContent='جاري تحميل المنتجات...';
+ const {data,error}=await sb.from('business_products').select('*').eq('business_id',businessId).order('created_at',{ascending:false});
+ if(error){box.textContent='تعذر تحميل المنتجات: '+error.message;return;}
+ box.innerHTML='';
+ (data||[]).forEach(p=>{
+  const row=document.createElement('div');row.className='admin-row';
+  row.innerHTML='<div><strong>'+esc(p.name)+'</strong><small>'+(p.price??'السعر عند الاستفسار')+' '+esc(p.unit||'')+' · '+(p.is_available?'ظاهر للزوار':'مخفي')+'</small></div><div class="rowbtn"><button type="button">تعديل</button><button type="button" class="secondary">حذف</button></div>';
+  row.querySelectorAll('button')[0].onclick=()=>editOwnerProduct(p);
+  row.querySelectorAll('button')[1].onclick=async()=>{if(!confirm('تحذف المنتج ده من محلك؟'))return;const {error}=await sb.from('business_products').delete().eq('id',p.id).eq('business_id',businessId);if(error)alert('لم يتم الحذف: '+error.message);else loadOwnerProducts();};
+  box.appendChild(row);
+ });
+ if(!data?.length)box.textContent='لسه مفيش منتجات. اضغط «إضافة منتج أو عرض» علشان تضيف أول سعر.';
+}
+function editOwnerProduct(p){
+ document.getElementById('ownerProductEditor').classList.remove('hidden');
+ [['ownerEditProductId',p?.id||''],['ownerEditProductName',p?.name||''],['ownerEditProductPrice',p?.price??''],['ownerEditProductUnit',p?.unit||''],['ownerEditProductImage',p?.image_path||''],['ownerEditProductDescription',p?.description||'']].forEach(([id,v])=>document.getElementById(id).value=v);
+ document.getElementById('ownerEditProductAvailable').checked=p?.is_available!==false;
+ document.getElementById('ownerEditProductImageStatus').textContent=p?.image_path?'صورة المنتج محفوظة. يمكنك اختيار صورة جديدة لاستبدالها.':'اختار صورة من معرض الموبايل ثم اضغط رفع الصورة.';
+}
+async function uploadOwnerProductImage(){
+ const businessId=document.getElementById('ownerProductBusiness').value,file=document.getElementById('ownerEditProductImageFile').files?.[0],status=document.getElementById('ownerEditProductImageStatus');
+ if(!businessId||!file)return alert('اختار نشاطًا وصورة من المعرض أولًا.');
+ if(!file.type.startsWith('image/'))return alert('اختار ملف صورة صحيح.');
+ if(file.size>5*1024*1024)return alert('حجم الصورة لازم يكون أقل من 5 ميجابايت.');
+ status.textContent='جاري رفع الصورة...';
+ const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,'_'),path=businessId+'/products/'+Date.now()+'-'+safe;
+ const {error}=await sb.storage.from('business-products').upload(path,file,{contentType:file.type,upsert:false});
+ if(error){status.textContent='فشل رفع الصورة: '+error.message;return;}
+ document.getElementById('ownerEditProductImage').value=path;status.textContent='تم رفع الصورة بنجاح. اضغط حفظ المنتج.';
+}
+async function saveOwnerProduct(){
+ const businessId=document.getElementById('ownerProductBusiness').value,id=document.getElementById('ownerEditProductId').value;
+ if(!businessId)return alert('اختار نشاطك أولًا.');
+ const name=document.getElementById('ownerEditProductName').value.trim(),rawPrice=document.getElementById('ownerEditProductPrice').value;
+ if(name.length<2)return alert('اكتب اسم المنتج.');
+ if(rawPrice!==''&&(!Number.isFinite(Number(rawPrice))||Number(rawPrice)<0))return alert('اكتب سعرًا صحيحًا أو اتركه فارغًا.');
+ const row={business_id:businessId,name,price:rawPrice===''?null:Number(rawPrice),unit:document.getElementById('ownerEditProductUnit').value.trim(),image_path:document.getElementById('ownerEditProductImage').value.trim()||null,description:document.getElementById('ownerEditProductDescription').value.trim(),is_available:document.getElementById('ownerEditProductAvailable').checked};
+ const query=id?sb.from('business_products').update(row).eq('id',id).eq('business_id',businessId):sb.from('business_products').insert(row);
+ const {error}=await query;
+ if(error)return alert('لم يتم الحفظ: '+error.message);
+ alert('تم حفظ المنتج بنجاح.');
+ document.getElementById('ownerProductEditor').classList.add('hidden');document.getElementById('ownerEditProductImageFile').value='';await loadOwnerProducts();
+}
+
 document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');selectedType=b.dataset.type;render();});
 document.querySelectorAll('.cat').forEach(b=>b.onclick=()=>openCategory(b.dataset.cat));
 async function refreshAuth(){
@@ -288,6 +389,7 @@ async function refreshAuth(){
  
  document.getElementById('adminBtn').classList.toggle('hidden',currentUser?.app_metadata?.role!=='admin');
  document.getElementById('reviewRequestsBtn').classList.toggle('hidden',currentUser?.app_metadata?.role!=='admin');
+ await loadOwnerBusinesses();
 }
 document.getElementById('accountToggle').onclick=()=>document.getElementById('accountDropdown').classList.toggle('hidden');
 document.addEventListener('click',e=>{const menu=document.querySelector('.account-menu');if(menu&&!menu.contains(e.target))document.getElementById('accountDropdown').classList.add('hidden');});
@@ -300,6 +402,13 @@ async function signInWithSocialProvider(provider){
 }
 document.getElementById('mainFbLoginBtn').onclick=()=>signInWithSocialProvider('facebook');
 document.getElementById('logoutBtn').onclick=async()=>{await sb.auth.signOut();await refreshAuth();};
+document.getElementById('ownerProductsBtn').onclick=openOwnerProducts;
+document.getElementById('ownerProductBusiness').onchange=loadOwnerProducts;
+document.getElementById('ownerNewProduct').onclick=()=>editOwnerProduct(null);
+document.getElementById('ownerReloadProducts').onclick=loadOwnerProducts;
+document.getElementById('ownerSaveProduct').onclick=saveOwnerProduct;
+document.getElementById('ownerUploadProductImage').onclick=uploadOwnerProductImage;
+document.getElementById('ownerCancelProduct').onclick=()=>document.getElementById('ownerProductEditor').classList.add('hidden');
 async function openFeaturedAdRequest(){
  if(!currentUser){document.getElementById('accountDropdown').classList.remove('hidden');alert('سجّل الدخول أو أنشئ حسابًا أولًا علشان نقدر نستقبل طلب الإعلان باسمك.');return;}
  const {data}=await sb.from('app_settings').select('value').eq('key','etisalat_cash_number').maybeSingle();
