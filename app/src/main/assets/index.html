@@ -20,12 +20,16 @@ main{max-width:760px;margin:auto;padding:17px 15px 90px}.section-head{display:fl
 .cards{display:grid;gap:10px}.listing{background:white;border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;gap:12px;align-items:flex-start}.avatar{width:48px;height:48px;flex:0 0 48px;border-radius:14px;background:var(--green2);display:grid;place-items:center;font-size:24px}.listing h3{font-size:15px;margin:0 0 4px}.listing p{margin:0 0 8px;font-size:12px;color:var(--muted)}.actions{display:flex;gap:7px;flex-wrap:wrap}.actions a,.actions button{font:inherit;text-decoration:none;border:0;border-radius:9px;padding:7px 10px;font-size:12px;background:var(--green2);color:var(--green);font-weight:700}.empty{background:white;border:1px dashed #cbd7d0;padding:22px;border-radius:15px;text-align:center;color:var(--muted);font-size:13px}
 .fab{position:fixed;bottom:18px;left:16px;background:var(--gold);color:#2b2619;border:0;border-radius:30px;padding:14px 19px;font-weight:850;box-shadow:0 6px 22px #0002}
 .modal{display:none;position:fixed;inset:0;background:#0008;z-index:5;padding:16px;align-items:flex-end;justify-content:center}.modal.show{display:flex}.sheet{width:min(100%,560px);background:white;border-radius:22px 22px 14px 14px;padding:18px;max-height:88vh;overflow:auto}.sheet h2{margin:0 0 13px;font-size:19px}.field{display:grid;gap:5px;margin:10px 0}.field label{font-size:12px;color:var(--muted)}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;background:white}.field textarea{min-height:70px}.submit{width:100%;border:0;background:var(--green);color:white;border-radius:12px;padding:13px;font-weight:800;margin-top:8px}.close{float:left;border:0;background:#f1f3f2;border-radius:9px;padding:7px 11px}
+.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:14px;margin:12px 0}
+.panel h3{margin:0 0 10px;font-size:16px}.rowbtn{display:flex;gap:8px;flex-wrap:wrap}.rowbtn button{border:0;border-radius:10px;padding:10px 12px;background:var(--green2);color:var(--green);font-weight:700}
+.smallnote{font-size:12px;color:var(--muted);line-height:1.7}.hidden{display:none!important}
 footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 </style>
 </head>
 <body>
 <header><div class="top"><div><div class="brand">جنب بيتك</div><div class="tag">كل اللي تحتاجه حواليك</div></div><div class="pill" id="connectionStatus">إسنا · جاري الاتصال</div></div><div class="search"><input id="q" placeholder="بتدور على إيه؟ محل، صنايعي، خدمة..." aria-label="بحث"><button id="searchBtn">بحث</button></div></header>
 <main>
+<div class="panel" id="accountPanel"><h3>حسابك</h3><div id="accountState" class="smallnote">سجّل الدخول لإضافة نشاطك ومتابعة طلباتك.</div><div class="rowbtn"><button id="loginBtn">دخول / إنشاء حساب</button><button id="logoutBtn" class="hidden">تسجيل خروج</button><button id="adminBtn" class="hidden">لوحة المدير</button></div></div>
 <div class="section-head"><h2>دور على اللي محتاجه</h2><span class="muted">اختار القسم</span></div>
 <div class="categories" id="categories">
 <button class="cat" data-cat="محلات"><span>🏪</span>محلات</button><button class="cat" data-cat="أكل ومشروبات"><span>🍽️</span>أكل ومشروبات</button><button class="cat" data-cat="صنايعية"><span>🧰</span>صنايعية</button><button class="cat" data-cat="صيانة"><span>🔧</span>صيانة</button><button class="cat" data-cat="توصيل"><span>🛵</span>توصيل</button><button class="cat" data-cat="خدمات منزلية"><span>🏠</span>خدمات منزلية</button>
@@ -38,33 +42,99 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 <button class="fab" id="addBtn">＋ أضف نشاطك</button>
 <div class="modal" id="modal"><div class="sheet"><button class="close" id="closeBtn">إغلاق ✕</button><h2>إضافة نشاط جديد</h2>
 <form id="listingForm">
-<div class="field"><label>اسم المحل أو الصنايعي *</label><input name="name" required maxlength="70" placeholder="مثال: أحمد للكهرباء"></div>
-<div class="field"><label>نوع النشاط *</label><select name="type" required><option value="محل">محل</option><option value="صنايعي">صنايعي</option><option value="خدمة">خدمة</option></select></div>
-<div class="field"><label>القسم *</label><select name="category"><option>محلات</option><option>أكل ومشروبات</option><option>صنايعية</option><option>صيانة</option><option>توصيل</option><option>خدمات منزلية</option></select></div>
-<div class="field"><label>رقم التليفون / واتساب *</label><input name="phone" required inputmode="tel" placeholder="01xxxxxxxxx"></div>
-<div class="field"><label>المنطقة أو العنوان</label><input name="area" placeholder="مثال: إسنا شارع البحر"></div>
-<div class="field"><label>وصف مختصر</label><textarea name="description" maxlength="240" placeholder="اكتب الخدمة أو المنتجات..."></textarea></div>
-<button class="submit" type="submit">حفظ كطلب مراجعة</button></form></div></div>
+<div class="field"><label>اسم المحل أو الصنايعي *</label><input name="name" required maxlength="100"></div>
+<div class="field"><label>نوع النشاط *</label><select name="type"><option value="shop">محل</option><option value="food">أكل ومشروبات</option><option value="craft">صنايعي</option><option value="maintenance">صيانة</option><option value="delivery">توصيل</option><option value="home_service">خدمات منزلية</option></select></div>
+<div class="field"><label>القسم *</label><input name="category" required placeholder="مثال: صنايعية"></div>
+<div class="field"><label>رقم التليفون *</label><input name="phone" required inputmode="tel"></div>
+<div class="field"><label>رقم واتساب</label><input name="whatsapp" inputmode="tel"></div>
+<div class="field"><label>العنوان</label><input name="address"></div>
+<div class="field"><label>وصف مختصر</label><textarea name="description" maxlength="500"></textarea></div>
+<div class="field"><label>الباقة المطلوبة</label><select name="plan"><option value="weekly">أسبوعي — 50 جنيه</option><option value="monthly">شهري — 200 جنيه</option><option value="yearly">سنوي — 2000 جنيه</option></select></div>
+<div class="field"><label>صورة إيصال تحويل اتصالات كاش *</label><input name="receipt" type="file" accept="image/jpeg,image/png,image/webp" required></div>
+<div class="smallnote" id="cashNumber">رقم محفظة اتصالات كاش سيظهر هنا بعد إدخاله من إعدادات المدير.</div>
+<button class="submit" type="submit">إرسال النشاط وطلب الدفع للمراجعة</button></form></div></div>
 <script>
 const SUPABASE_URL='https://qedaojphnxwoptitfzzk.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_VyDwQNzQQN9wj8iUqu1_DQ_IN7AgxRM';
-const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-let cloudRows=[],selectedType='الكل',selectedCategory='';
-const cards=document.getElementById('cards');
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+let cloudRows=[],selectedType='الكل',selectedCategory='',currentUser=null;
+const cards=document.getElementById('cards'),modal=document.getElementById('modal');
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function loadCloudListings(){
  const status=document.getElementById('connectionStatus');
  try{
-  const {data,error}=await supabaseClient.from('businesses').select('id,name,business_type,category,phone,whatsapp,address,description').eq('status','approved').order('created_at',{ascending:false});
-  if(error) throw error;
+  const {data,error}=await sb.from('businesses').select('id,name,business_type,category,phone,whatsapp,address,description').eq('status','approved').order('created_at',{ascending:false});
+  if(error)throw error;
   cloudRows=(data||[]).map(x=>({...x,type:({shop:'محل',food:'محل',craft:'صنايعي',maintenance:'صنايعي',delivery:'خدمة',home_service:'خدمة',other:'خدمة'})[x.business_type]||'خدمة',area:x.address||'إسنا'}));
   status.textContent='متصل بالسحابة';render();
- }catch(err){status.textContent='الاتصال غير متاح';cards.innerHTML='<div class="empty">تعذر تحميل البيانات السحابية. تحقق من الاتصال وإعدادات قاعدة البيانات.</div>';console.error(err);}
+ }catch(e){status.textContent='الاتصال غير متاح';cards.innerHTML='<div class="empty">تعذر تحميل الأنشطة. تحقق من الإنترنت.</div>';console.error(e);}
 }
-function render(){const q=document.getElementById('q').value.trim().toLowerCase();const rows=cloudRows.filter(x=>(selectedType==='الكل'||x.type===selectedType)&&(!selectedCategory||x.category===selectedCategory)&&[x.name,x.category,x.area,x.description].join(' ').toLowerCase().includes(q));document.getElementById('count').textContent=rows.length+' نتيجة';cards.innerHTML='';if(!rows.length){cards.innerHTML='<div class="empty">مفيش نتائج مطابقة دلوقتي. جرّب كلمة تانية أو أضف نشاط جديد.</div>';return}rows.forEach(x=>{const el=document.createElement('article');el.className='listing';const avatar=x.type==='صنايعي'?'🧰':x.type==='خدمة'?'🚚':'🏪';const phone=x.phone.replace(/[^\d+]/g,'');el.innerHTML=`<div class="avatar">${avatar}</div><div style="min-width:0;flex:1"><h3></h3><p></p><div class="muted"></div><div class="actions"><a href="tel:${phone}">اتصال</a><a href="https://wa.me/${phone.replace(/^0/,'20')}" target="_blank" rel="noopener">واتساب</a></div></div>`;el.querySelector('h3').textContent=x.name;el.querySelector('p').textContent=x.category+' · '+x.type;el.querySelector('.muted').textContent=(x.area||'إسنا')+(x.description?' — '+x.description:'');cards.appendChild(el)})}
+function render(){
+ const q=document.getElementById('q').value.trim().toLowerCase();
+ const rows=cloudRows.filter(x=>(selectedType==='الكل'||x.type===selectedType)&&(!selectedCategory||x.category===selectedCategory)&&[x.name,x.category,x.area,x.description].join(' ').toLowerCase().includes(q));
+ document.getElementById('count').textContent=rows.length+' نتيجة';cards.innerHTML='';
+ if(!rows.length){cards.innerHTML='<div class="empty">لا توجد أنشطة منشورة مطابقة حاليًا.</div>';return;}
+ rows.forEach(x=>{const el=document.createElement('article');el.className='listing';const p=(x.phone||'').replace(/[^\d+]/g,'');const wa=(x.whatsapp||x.phone||'').replace(/\D/g,'').replace(/^0/,'20');el.innerHTML='<div class="avatar">🏪</div><div style="min-width:0;flex:1"><h3>'+esc(x.name)+'</h3><p>'+esc(x.category)+' · '+esc(x.type)+'</p><div class="muted">'+esc(x.area)+' — '+esc(x.description)+'</div><div class="actions"><a href="tel:'+p+'">اتصال</a><a href="https://wa.me/'+wa+'" target="_blank" rel="noopener">واتساب</a></div></div>';cards.appendChild(el);});
+}
 document.getElementById('searchBtn').onclick=render;document.getElementById('q').addEventListener('input',render);
-document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');selectedType=b.dataset.type;render()});
-document.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{selectedCategory=selectedCategory===b.dataset.cat?'':b.dataset.cat;document.querySelectorAll('.cat').forEach(x=>x.style.outline=x.dataset.cat===selectedCategory?'2px solid #126b4d':'none');render()});
-const modal=document.getElementById('modal');document.getElementById('addBtn').onclick=()=>alert('إضافة النشاط ستتاح بعد استكمال تسجيل دخول أصحاب الأنشطة ونظام الاشتراك.');document.getElementById('closeBtn').onclick=()=>modal.classList.remove('show');modal.onclick=e=>{if(e.target===modal)modal.classList.remove('show')};
-document.getElementById('listingForm').onsubmit=e=>{e.preventDefault();alert('لم يتم إرسال الطلب. تسجيل الدخول مطلوب لحفظ النشاط في قاعدة البيانات.');};loadCloudListings();
+document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');selectedType=b.dataset.type;render();});
+document.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{selectedCategory=selectedCategory===b.dataset.cat?'':b.dataset.cat;document.querySelectorAll('.cat').forEach(x=>x.style.outline=x.dataset.cat===selectedCategory?'2px solid #126b4d':'none');render();});
+async function refreshAuth(){
+ const {data}=await sb.auth.getSession();currentUser=data.session?.user||null;
+ document.getElementById('accountState').textContent=currentUser?'تم تسجيل الدخول: '+currentUser.email:'سجّل الدخول لإضافة نشاطك ومتابعة طلباتك.';
+ document.getElementById('logoutBtn').classList.toggle('hidden',!currentUser);
+ document.getElementById('loginBtn').classList.toggle('hidden',!!currentUser);
+ document.getElementById('adminBtn').classList.toggle('hidden',currentUser?.app_metadata?.role!=='admin');
+}
+document.getElementById('loginBtn').onclick=async()=>{
+ const email=prompt('اكتب بريدك الإلكتروني');if(!email)return;
+ const password=prompt('اكتب كلمة مرور لا تقل عن 8 أحرف');if(!password)return;
+ const choice=confirm('موافق = إنشاء حساب جديد. إلغاء = تسجيل دخول.');
+ const result=choice?await sb.auth.signUp({email,password}):await sb.auth.signInWithPassword({email,password});
+ if(result.error){alert(result.error.message);return;}
+ if(choice&&!result.data.session)alert('تم إنشاء الحساب. افتح رسالة البريد لتأكيد الحساب ثم سجّل الدخول.');
+ else alert('تم تسجيل الدخول بنجاح.');
+ await refreshAuth();
+};
+document.getElementById('logoutBtn').onclick=async()=>{await sb.auth.signOut();await refreshAuth();};
+document.getElementById('addBtn').onclick=async()=>{
+ if(!currentUser){alert('سجّل الدخول أو أنشئ حسابًا أولًا.');return;}
+ const {data}=await sb.from('app_settings').select('value').eq('key','etisalat_cash_number').maybeSingle();
+ const num=data?.value?.value||'لم يضف المدير رقم المحفظة بعد';
+ document.getElementById('cashNumber').textContent='حوّل قيمة الباقة إلى محفظة اتصالات كاش: '+num+' — لا تحول قبل ظهور رقم صحيح.';
+ modal.classList.add('show');
+};
+document.getElementById('closeBtn').onclick=()=>modal.classList.remove('show');modal.onclick=e=>{if(e.target===modal)modal.classList.remove('show');};
+document.getElementById('listingForm').onsubmit=async e=>{
+ e.preventDefault();if(!currentUser){alert('سجّل الدخول أولًا.');return;}
+ const f=new FormData(e.target),file=f.get('receipt');
+ if(!file||!file.size){alert('ارفع صورة الإيصال.');return;}
+ const plan=f.get('plan'),prices={weekly:50,monthly:200,yearly:2000},types=f.get('type');
+ try{
+  const path=currentUser.id+'/receipts/'+Date.now()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const up=await sb.storage.from('janb-media').upload(path,file,{contentType:file.type,upsert:false});
+  if(up.error)throw up.error;
+  const b=await sb.from('businesses').insert({owner_id:currentUser.id,name:f.get('name'),business_type:types,category:f.get('category'),phone:f.get('phone'),whatsapp:f.get('whatsapp')||f.get('phone'),address:f.get('address'),description:f.get('description'),status:'pending'}).select('id').single();
+  if(b.error)throw b.error;
+  const sub=await sb.from('subscriptions').insert({business_id:b.data.id,owner_id:currentUser.id,plan,amount_egp:prices[plan],status:'pending'}).select('id').single();
+  if(sub.error)throw sub.error;
+  const pay=await sb.from('payment_requests').insert({owner_id:currentUser.id,business_id:b.data.id,subscription_id:sub.data.id,payment_type:'subscription',amount_egp:prices[plan],receipt_path:path,status:'pending'});
+  if(pay.error)throw pay.error;
+  alert('وصل طلب النشاط والإيصال للإدارة للمراجعة. لن يظهر النشاط إلا بعد تأكيد وصول التحويل وتفعيل الاشتراك.');
+  e.target.reset();modal.classList.remove('show');
+ }catch(err){alert('لم يكتمل الإرسال: '+(err.message||'خطأ غير معروف'));console.error(err);}
+};
+async function adminPanel(){
+ if(currentUser?.app_metadata?.role!=='admin'){alert('هذه الصفحة للمدير فقط.');return;}
+ const {data:payments,error}=await sb.from('payment_requests').select('id,amount_egp,receipt_path,payment_type,status,created_at,business_id,subscription_id').eq('status','pending').order('created_at');
+ if(error){alert(error.message);return;}
+ const html=(payments||[]).map(p=>'<div class="panel"><b>'+p.amount_egp+' جنيه — '+esc(p.payment_type)+'</b><p class="smallnote">طلب: '+p.id+'</p><a href="'+sb.storage.from('janb-media').getPublicUrl(p.receipt_path).data.publicUrl+'" target="_blank">عرض الإيصال</a><div class="rowbtn"><button data-approve="'+p.id+'" data-business="'+(p.business_id||'')+'" data-sub="'+(p.subscription_id||'')+'">تأكيد الدفع والتفعيل</button><button data-reject="'+p.id+'">رفض</button></div></div>').join('');
+ const w=window.open('','_blank');if(!w){alert('اسمح بفتح نافذة لوحة المدير.');return;}
+ w.document.write('<meta charset="utf-8"><title>لوحة مدير جنب بيتك</title><body dir="rtl" style="font-family:Arial;padding:18px;background:#f5f7f5"><h2>طلبات الدفع المعلقة</h2>'+(html||'لا توجد طلبات معلقة')+'</body>');
+ w.document.close();
+}
+document.getElementById('adminBtn').onclick=adminPanel;
+sb.auth.onAuthStateChange(()=>setTimeout(refreshAuth,0));
+(async()=>{await refreshAuth();await loadCloudListings();})();
 </script>
 </body></html>
