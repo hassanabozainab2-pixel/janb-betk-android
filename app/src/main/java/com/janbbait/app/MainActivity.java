@@ -109,7 +109,7 @@ public class MainActivity extends Activity {
                     throw new IllegalStateException("The server did not return an HTML document");
                 }
                 web.post(() -> web.loadDataWithBaseURL(
-                        APP_URL, page, "text/html", "UTF-8", null));
+                        targetUrl, page, "text/html", "UTF-8", null));
             } catch (Exception error) {
                 web.post(() -> web.loadUrl(LOCAL_APP_URL));
             } finally {
