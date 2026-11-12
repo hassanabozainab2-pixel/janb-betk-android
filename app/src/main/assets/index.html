@@ -297,7 +297,7 @@ async function runProductSearch(){
   rows.sort((a,b)=>{const ap=a.price===null||a.price===undefined?Infinity:Number(a.price),bp=b.price===null||b.price===undefined?Infinity:Number(b.price);return ap-bp;});
   const groups=new Map();
   rows.forEach(p=>{const key=(String(p.name||'').trim().toLocaleLowerCase('ar')+'|'+String(p.unit||'').trim().toLocaleLowerCase('ar'));if(!groups.has(key))groups.set(key,[]);groups.get(key).push(p);});
-  const ordered=[...groups.values()].flatMap(g=>g.sort((a,b)=>(a.price??Infinity)-(b.price??Infinity)));
+  const ordered=[...groups.values()].flatMap(g=>{g.sort((a,b)=>(a.price??Infinity)-(b.price??Infinity));return g.map((p,i)=>({...p,isBestPrice:i===0}));});
   box.innerHTML='<div class="product-search-title">نتائج البحث عن: '+esc(term)+'</div><div class="smallnote">الأسعار مرتبة من الأقل للأعلى، وقارن نفس المنتج ونفس الحجم.</div><div class="product-search-list"></div>';
   const list=box.querySelector('.product-search-list');
   ordered.forEach((p,index)=>{
@@ -307,7 +307,7 @@ async function runProductSearch(){
    const image=p.image_path?sb.storage.from('business-products').getPublicUrl(p.image_path).data.publicUrl:'';
    const price=p.price===null||p.price===undefined?'السعر عند الاستفسار':Number(p.price).toLocaleString('ar-EG')+' جنيه';
    const card=document.createElement('article');card.className='product-result';
-   card.innerHTML=(image?'<img src="'+esc(image)+'" alt="'+esc(p.name)+'" loading="lazy">':'<div class="product-placeholder">🛒</div>')+'<div class="product-result-main"><div class="product-result-name">'+esc(p.name)+'</div><div class="product-result-meta">'+esc(p.shop.name)+' · '+esc(p.shop.address||'إسنا')+(p.unit?' · '+esc(p.unit):'')+'</div><div class="product-result-price">'+price+'</div>'+(index===0&&p.price!==null&&p.price!==undefined?'<span class="best-price">أقل سعر بين النتائج</span>':'')+'<div class="product-result-actions">'+(orderUrl?'<a class="order-now" target="_blank" rel="noopener" href="'+esc(orderUrl)+'">اطلب الآن عبر واتساب</a>':'<span class="smallnote">لا يوجد رقم واتساب للمحل</span>')+'<button type="button" class="view-shop">عرض المحل</button></div></div>';
+   card.innerHTML=(image?'<img src="'+esc(image)+'" alt="'+esc(p.name)+'" loading="lazy">':'<div class="product-placeholder">🛒</div>')+'<div class="product-result-main"><div class="product-result-name">'+esc(p.name)+'</div><div class="product-result-meta">'+esc(p.shop.name)+' · '+esc(p.shop.address||'إسنا')+(p.unit?' · '+esc(p.unit):'')+'</div><div class="product-result-price">'+price+'</div>'+(p.isBestPrice&&p.price!==null&&p.price!==undefined?'<span class="best-price">أقل سعر لهذا المنتج</span>':'')+'<div class="product-result-actions">'+(orderUrl?'<a class="order-now" target="_blank" rel="noopener" href="'+esc(orderUrl)+'">اطلب الآن عبر واتساب</a>':'<span class="smallnote">لا يوجد رقم واتساب للمحل</span>')+'<button type="button" class="view-shop">عرض المحل</button></div></div>';
    card.querySelector('.view-shop').onclick=()=>openBusinessDetail(p.business_id);list.appendChild(card);
   });
  }catch(e){console.error('Product search failed',e);box.innerHTML='<div class="product-search-title">تعذر البحث</div><div class="empty">حصلت مشكلة في تحميل الأسعار: '+esc(e.message||'حاول مرة أخرى')+'</div>';}
