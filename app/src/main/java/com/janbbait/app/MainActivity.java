@@ -163,7 +163,7 @@ public class MainActivity extends Activity {
                 + "return 'no';"
                 + "})()",
                 value -> {
-                    if ("\\"handled\\"".equals(value)) return;
+                    if ("\\\"handled\\\"".equals(value)) return;
                     if (web != null && web.canGoBack()) {
                         web.goBack();
                     } else {
