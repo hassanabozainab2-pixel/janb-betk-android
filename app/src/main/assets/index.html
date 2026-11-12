@@ -422,7 +422,7 @@ async function adminPanel(){
  if(!payments?.length){list.textContent='لا توجد طلبات دفع معلقة.';return;}
  list.innerHTML='';
  payments.forEach(async p=>{
-  const item=document.createElement('div');item.className='panel';item.dataset.paymentType=p.payment_type||'';
+  const item=document.createElement('div');item.className='panel';item.dataset.paymentType=p.payment_type||'';if(list.dataset.filter&&list.dataset.filter!=='all'&&list.dataset.filter!==p.payment_type)item.classList.add('hidden');
   const signed=await sb.storage.from('janb-receipts').createSignedUrl(p.receipt_path,300);const url=signed.data?.signedUrl||'';
   item.innerHTML='<b>'+p.amount_egp+' جنيه — '+esc(p.payment_type)+'</b><p class="smallnote">'+esc(p.id)+'</p><a target="_blank" rel="noopener" href="'+url+'">عرض الإيصال</a><div class="rowbtn"><button class="approve">تأكيد الدفع والتفعيل</button><button class="reject">رفض</button></div>';
   item.querySelector('.approve').onclick=()=>approvePayment(p);
@@ -485,9 +485,9 @@ async function openRequestReviewHub(){
 }
 async function openRequestsByType(kind){
  document.getElementById('requestReviewHub').classList.add('hidden');
+ const list=document.getElementById('adminPayments');list.dataset.filter=kind;
  await adminPanel();
  adminTab('payments');
- const list=document.getElementById('adminPayments');
  const title=kind==='subscription'?'طلبات إضافة الأنشطة':kind==='featured_ad'?'طلبات الإعلانات المميزة':'كل الطلبات';
  list.dataset.filter=kind;
  list.querySelectorAll('[data-payment-type]').forEach(el=>el.classList.toggle('hidden',kind!=='all'&&el.dataset.paymentType!==kind));
