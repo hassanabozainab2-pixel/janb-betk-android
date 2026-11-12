@@ -109,7 +109,7 @@ const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 function showFeaturedDetails(x){
  const box=document.getElementById('featuredDetailContent');
  const url=x.demo_image||sb.storage.from('janb-media').getPublicUrl(x.media_path).data.publicUrl;
- const wa=(x.whatsapp||x.phone||'').replace(/\\D/g,'').replace(/^0/,'20');
+ const wa=(x.whatsapp||x.phone||'').replace(/\D/g,'').replace(/^0/,'20');
  const media=x.media_type==='video'?'<video controls playsinline class="detail-video" src="'+esc(url)+'"></video>':'<img class="detail-hero" src="'+esc(url)+'" alt="'+esc(x.title)+'">';
  const contact=(x.phone?'<a href="tel:'+esc(x.phone)+'">☎ اتصال هاتفي</a>':'')+(wa?'<a class="whatsapp" target="_blank" rel="noopener" href="https://wa.me/'+esc(wa)+'">واتساب مباشر</a>':'');
  box.innerHTML=media+'<div class="detail-card"><div class="ad-slot">'+(x.is_demo?'نموذج تجريبي':'⭐ إعلان مميز · المساحة '+esc(x.slot))+'</div><h1 class="detail-title">'+esc(x.title)+'</h1><div class="smallnote">معلن على تطبيق جنب بيتك</div></div><div class="detail-card"><h2 class="detail-section-title">تفاصيل الإعلان والعرض</h2><div class="detail-description">'+esc(x.description||'صاحب الإعلان لم يضف تفاصيل إضافية حتى الآن.')+'</div></div>'+(contact?'<div class="detail-card"><h2 class="detail-section-title">تواصل مع صاحب الإعلان</h2><div class="detail-contact">'+contact+'</div></div>':'<div class="detail-card"><div class="smallnote">لا توجد وسيلة تواصل مضافة لهذا الإعلان حاليًا.</div></div>')+(x.is_demo?'<div class="detail-demo-note">هذا إعلان تجريبي للعرض فقط، وبياناته ليست نشاطًا حقيقيًا.</div>':'');
@@ -204,7 +204,7 @@ function render(){
  if(!rows.length){target.innerHTML='<div class="empty">لا توجد أنشطة منشورة في هذا القسم حاليًا.</div>';return;}
  rows.forEach(x=>{
   const el=document.createElement('article');el.className='listing';el.style.cursor='pointer';
-  const p=(x.phone||'').replace(/[^\\d+]/g,'');const wa=(x.whatsapp||x.phone||'').replace(/\\D/g,'').replace(/^0/,'20');
+  const p=(x.phone||'').replace(/[^\d+]/g,'');const wa=(x.whatsapp||x.phone||'').replace(/\D/g,'').replace(/^0/,'20');
   const image=x.media_path?sb.storage.from('janb-media').getPublicUrl(x.media_path).data.publicUrl:'';
   const avatar=image?'<img class="category-business-img" src="'+esc(image)+'" alt="'+esc(x.name)+'">':'<div class="avatar">🏪</div>';
   el.innerHTML=avatar+'<div style="min-width:0;flex:1"><h3>'+esc(x.name)+'</h3><p>'+esc(x.category)+' · '+esc(x.area)+'</p><div class="smallnote">اضغط لعرض صفحة المحل والمنتجات والعروض</div><div class="actions"><a href="tel:'+p+'">اتصال</a><a href="https://wa.me/'+wa+'" target="_blank" rel="noopener">واتساب</a></div></div>';
@@ -213,7 +213,7 @@ function render(){
 }
 document.getElementById('searchBtn').onclick=render;document.getElementById('q').addEventListener('input',render);
 document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');selectedType=b.dataset.type;render();});
-document.querySelectorAll('.cat').forEach(b=>b.onclick=()=>openCategory(b.dataset.cat));render();});
+document.querySelectorAll('.cat').forEach(b=>b.onclick=()=>openCategory(b.dataset.cat));
 async function refreshAuth(){
  const {data}=await sb.auth.getSession();currentUser=data.session?.user||null;
  document.getElementById('loginGate').classList.toggle('hidden',!!currentUser);
