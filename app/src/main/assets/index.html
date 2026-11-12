@@ -133,7 +133,7 @@ document.getElementById('adForm').onsubmit=async e=>{
   const mediaPath=base+'-'+media.name.replace(/[^a-zA-Z0-9._-]/g,'_');
   const receiptPath=currentUser.id+'/receipts/ad-'+Date.now()+'-'+receipt.name.replace(/[^a-zA-Z0-9._-]/g,'_');
   const m=await sb.storage.from('janb-media').upload(mediaPath,media,{contentType:media.type,upsert:false});if(m.error)throw m.error;
-  const rp=await sb.storage.from('janb-media').upload(receiptPath,receipt,{contentType:receipt.type,upsert:false});if(rp.error)throw rp.error;
+  const rp=await sb.storage.from('janb-receipts').upload(receiptPath,receipt,{contentType:receipt.type,upsert:false});if(rp.error)throw rp.error;
   const ad=await sb.from('featured_ads').insert({owner_id:currentUser.id,slot:Number(f.get('slot')),title:f.get('title'),description:f.get('description'),phone:f.get('phone'),whatsapp:f.get('whatsapp'),media_path:mediaPath,media_type:media.type.startsWith('video/')?'video':'image',amount_egp:100,status:'pending'}).select('id').single();if(ad.error)throw ad.error;
   const pay=await sb.from('payment_requests').insert({owner_id:currentUser.id,featured_ad_id:ad.data.id,payment_type:'featured_ad',amount_egp:100,receipt_path:receiptPath,status:'pending'});if(pay.error)throw pay.error;
   alert('تم إرسال طلب الإعلان والإيصال. سيظهر بعد مراجعة الإدارة وتأكيد الدفع.');e.target.reset();document.getElementById('adModal').classList.remove('show');
@@ -154,7 +154,7 @@ document.getElementById('listingForm').onsubmit=async e=>{
  const plan=f.get('plan'),prices={weekly:50,monthly:200,yearly:2000},types=f.get('type');
  try{
   const path=currentUser.id+'/receipts/'+Date.now()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
-  const up=await sb.storage.from('janb-media').upload(path,file,{contentType:file.type,upsert:false});
+  const up=await sb.storage.from('janb-receipts').upload(path,file,{contentType:file.type,upsert:false});
   if(up.error)throw up.error;
   const b=await sb.from('businesses').insert({owner_id:currentUser.id,name:f.get('name'),business_type:types,category:f.get('category'),phone:f.get('phone'),whatsapp:f.get('whatsapp')||f.get('phone'),address:f.get('address'),description:f.get('description'),status:'pending'}).select('id').single();
   if(b.error)throw b.error;
@@ -183,9 +183,9 @@ async function adminPanel(){
  if(error){list.textContent='تعذر تحميل الطلبات: '+error.message;return;}
  if(!payments?.length){list.textContent='لا توجد طلبات دفع معلقة.';return;}
  list.innerHTML='';
- payments.forEach(p=>{
+ payments.forEach(async p=>{
   const item=document.createElement('div');item.className='panel';
-  const url=sb.storage.from('janb-media').getPublicUrl(p.receipt_path).data.publicUrl;
+  const signed=await sb.storage.from('janb-receipts').createSignedUrl(p.receipt_path,300);const url=signed.data?.signedUrl||'';
   item.innerHTML='<b>'+p.amount_egp+' جنيه — '+esc(p.payment_type)+'</b><p class="smallnote">'+esc(p.id)+'</p><a target="_blank" rel="noopener" href="'+url+'">عرض الإيصال</a><div class="rowbtn"><button class="approve">تأكيد الدفع والتفعيل</button><button class="reject">رفض</button></div>';
   item.querySelector('.approve').onclick=()=>approvePayment(p);
   item.querySelector('.reject').onclick=()=>rejectPayment(p);
