@@ -14,10 +14,19 @@ import android.net.Uri;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.webkit.WebViewAssetLoader;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class MainActivity extends Activity {
     private WebViewAssetLoader assetLoader;
     private WebView web;
-    private boolean localFallbackUsed = false;
+    private final ExecutorService loader = Executors.newSingleThreadExecutor();
     private static final String APP_URL = "https://qedaojphnxwoptitfzzk.supabase.co/functions/v1/janb-app";
     private static final String LOCAL_APP_URL = "https://appassets.androidplatform.net/assets/index.html";
 
@@ -39,17 +48,6 @@ public class MainActivity extends Activity {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                 return assetLoader.shouldInterceptRequest(request.getUrl());
-            }
-
-            @Override
-            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                super.onReceivedError(view, request, error);
-                if (request.isForMainFrame()
-                        && !localFallbackUsed
-                        && request.getUrl().toString().startsWith(APP_URL)) {
-                    localFallbackUsed = true;
-                    view.loadUrl(LOCAL_APP_URL);
-                }
             }
 
             @Override
@@ -80,7 +78,44 @@ public class MainActivity extends Activity {
         });
         setContentView(web);
         loadAuthCallback(getIntent());
-        if (getIntent() == null || getIntent().getData() == null) web.loadUrl(APP_URL);
+        if (getIntent() == null || getIntent().getData() == null) {
+            loadHostedHtml(APP_URL);
+        }
+    }
+
+    private void loadHostedHtml(String targetUrl) {
+        loader.execute(() -> {
+            HttpURLConnection connection = null;
+            try {
+                connection = (HttpURLConnection) new URL(targetUrl).openConnection();
+                connection.setRequestMethod("GET");
+                connection.setConnectTimeout(20000);
+                connection.setReadTimeout(25000);
+                connection.setRequestProperty("Accept", "text/html");
+                connection.setRequestProperty("Cache-Control", "no-cache");
+                int status = connection.getResponseCode();
+                if (status < 200 || status >= 300) {
+                    throw new IllegalStateException("HTTP " + status);
+                }
+                StringBuilder html = new StringBuilder();
+                try (InputStream input = connection.getInputStream();
+                     BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) html.append(line).append('\n');
+                }
+                String page = html.toString();
+                if (!page.trim().toLowerCase().startsWith("<!doctype html")
+                        && !page.trim().toLowerCase().startsWith("<html")) {
+                    throw new IllegalStateException("The server did not return an HTML document");
+                }
+                web.post(() -> web.loadDataWithBaseURL(
+                        APP_URL, page, "text/html", "UTF-8", null));
+            } catch (Exception error) {
+                web.post(() -> web.loadUrl(LOCAL_APP_URL));
+            } finally {
+                if (connection != null) connection.disconnect();
+            }
+        });
     }
 
     @Override
@@ -94,12 +129,18 @@ public class MainActivity extends Activity {
         if (intent == null || intent.getData() == null || web == null) return;
         Uri uri = intent.getData();
         if (!"janbbait".equals(uri.getScheme()) || !"auth".equals(uri.getHost())) return;
-        localFallbackUsed = false;
         String callbackUrl = APP_URL;
         String query = uri.getEncodedQuery();
         String fragment = uri.getEncodedFragment();
         if (query != null && !query.isEmpty()) callbackUrl += "?" + query;
         if (fragment != null && !fragment.isEmpty()) callbackUrl += "#" + fragment;
-        web.loadUrl(callbackUrl);
+        loadHostedHtml(callbackUrl);
+    }
+
+    @Override
+    protected void onDestroy() {
+        loader.shutdownNow();
+        if (web != null) web.destroy();
+        super.onDestroy();
     }
 }
