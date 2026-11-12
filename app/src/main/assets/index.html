@@ -11,7 +11,7 @@
 :root{--green:#126b4d;--green2:#e8f4ee;--gold:#e2b64f;--ink:#17231e;--muted:#6b7771;--line:#e6ebe8;--bg:#f6f8f6}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif}
 header{background:linear-gradient(135deg,#0d5940,#16835d);color:white;padding:22px 18px 26px;border-radius:0 0 25px 25px}
-.top{display:flex;align-items:center;justify-content:space-between;gap:10px}.brand{font-size:25px;font-weight:850}.tag{font-size:13px;opacity:.9;margin-top:3px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}.brand-area{display:flex;align-items:center;gap:12px;min-width:0}.account-menu{position:relative;flex-shrink:0}.account-toggle{border:1px solid #ffffff88;background:#ffffff18;color:white;border-radius:20px;padding:8px 12px;font:inherit;font-size:12px;font-weight:750;white-space:nowrap}.account-dropdown{position:absolute;top:calc(100% + 10px);left:0;width:min(290px,82vw);z-index:10;background:white;color:var(--ink);border:1px solid var(--line);border-radius:15px;padding:13px;box-shadow:0 8px 24px #0003}.account-dropdown .rowbtn{margin-top:10px}.account-dropdown .rowbtn button{font-size:12px}.brand{font-size:25px;font-weight:850}.tag{font-size:13px;opacity:.9;margin-top:3px}
 .pill{border:1px solid #ffffff55;border-radius:30px;padding:7px 11px;font-size:12px}
 .search{margin-top:19px;display:flex;gap:8px}.search input{flex:1;min-width:0;border:0;border-radius:13px;padding:14px;font-size:15px;outline:none}.search button{border:0;border-radius:13px;background:var(--gold);color:#2c2617;font-weight:800;padding:0 16px}
 main{max-width:760px;margin:auto;padding:17px 15px 90px}.section-head{display:flex;align-items:center;justify-content:space-between;margin:20px 2px 12px}.section-head h2{font-size:18px;margin:0}.muted{color:var(--muted);font-size:12px}
@@ -27,9 +27,8 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 </style>
 </head>
 <body>
-<header><div class="top"><div><div class="brand">جنب بيتك</div><div class="tag">كل اللي تحتاجه حواليك</div></div><div class="pill" id="connectionStatus">إسنا · جاري الاتصال</div></div><div class="search"><input id="q" placeholder="بتدور على إيه؟ محل، صنايعي، خدمة..." aria-label="بحث"><button id="searchBtn">بحث</button></div></header>
+<header><div class="top"><div class="brand-area"><div><div class="brand">جنب بيتك</div><div class="tag">كل اللي تحتاجه حواليك</div></div><div class="account-menu"><button class="account-toggle" id="accountToggle" type="button">حسابك ▾</button><div class="account-dropdown hidden" id="accountDropdown"><div id="accountState" class="smallnote">سجّل الدخول لإضافة نشاطك ومتابعة طلباتك.</div><div class="rowbtn"><button id="loginBtn">دخول / إنشاء حساب</button><button id="logoutBtn" class="hidden">تسجيل خروج</button><button id="adminBtn" class="hidden">لوحة المدير</button><button id="adRequestBtn" class="hidden">اطلب إعلانًا مميزًا</button></div></div></div></div><div class="pill" id="connectionStatus">إسنا · جاري الاتصال</div></div><div class="search"><input id="q" placeholder="بتدور على إيه؟ محل، صنايعي، خدمة..." aria-label="بحث"><button id="searchBtn">بحث</button></div></header>
 <main>
-<div class="panel" id="accountPanel"><h3>حسابك</h3><div id="accountState" class="smallnote">سجّل الدخول لإضافة نشاطك ومتابعة طلباتك.</div><div class="rowbtn"><button id="loginBtn">دخول / إنشاء حساب</button><button id="logoutBtn" class="hidden">تسجيل خروج</button><button id="adminBtn" class="hidden">لوحة المدير</button><button id="adRequestBtn" class="hidden">اطلب إعلانًا مميزًا</button></div></div>
 <div id="adminPanel" class="panel hidden"><h3>لوحة المدير — طلبات الدفع والإعدادات</h3><div class="field"><label>رقم محفظة اتصالات كاش</label><input id="adminCashNumber" inputmode="tel" placeholder="أدخل رقم المحفظة"></div><div class="rowbtn"><button id="saveCashNumber">حفظ رقم المحفظة</button></div><hr><div id="adminPayments" class="smallnote">لا توجد طلبات محملة.</div></div>
 <section id="featuredSection"><div class="section-head"><h2>إعلانات مميزة</h2><span class="muted">3 مساحات أعلى الصفحة</span></div><div id="featuredAds" class="cards"><div class="empty">جاري تحميل الإعلانات...</div></div></section>
 <div class="section-head"><h2>دور على اللي محتاجه</h2><span class="muted">اختار القسم</span></div>
@@ -118,6 +117,8 @@ async function refreshAuth(){
  document.getElementById('loginBtn').classList.toggle('hidden',!!currentUser);
  document.getElementById('adminBtn').classList.toggle('hidden',currentUser?.app_metadata?.role!=='admin');document.getElementById('adRequestBtn').classList.toggle('hidden',!currentUser);
 }
+document.getElementById('accountToggle').onclick=()=>document.getElementById('accountDropdown').classList.toggle('hidden');
+document.addEventListener('click',e=>{const menu=document.querySelector('.account-menu');if(menu&&!menu.contains(e.target))document.getElementById('accountDropdown').classList.add('hidden');});
 document.getElementById('loginBtn').onclick=async()=>{
  const email=prompt('اكتب بريدك الإلكتروني');if(!email)return;
  const password=prompt('اكتب كلمة مرور لا تقل عن 8 أحرف');if(!password)return;
