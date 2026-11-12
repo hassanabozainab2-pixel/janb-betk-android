@@ -101,10 +101,7 @@ public class MainActivity extends Activity {
             }
         });
         setContentView(web);
-        loadAuthCallback(getIntent());
-        if (getIntent() == null || getIntent().getData() == null) {
-            loadHostedHtml(APP_URL);
-        }
+        handleIncomingLink(getIntent());
     }
 
     private void loadHostedHtml(String targetUrl) {
@@ -205,7 +202,23 @@ public class MainActivity extends Activity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        loadAuthCallback(intent);
+        handleIncomingLink(intent);
+    }
+
+    private void handleIncomingLink(Intent intent) {
+        if (intent == null || intent.getData() == null) {
+            loadHostedHtml(APP_URL);
+            return;
+        }
+        Uri uri = intent.getData();
+        if ("janbbait".equals(uri.getScheme()) && "auth".equals(uri.getHost())) {
+            loadAuthCallback(intent);
+            return;
+        }
+        if ("https".equalsIgnoreCase(uri.getScheme())
+                && "hassanabozainab2-pixel.github.io".equalsIgnoreCase(uri.getHost())) {
+            loadHostedHtml(APP_URL);
+        }
     }
 
     private void loadAuthCallback(Intent intent) {
