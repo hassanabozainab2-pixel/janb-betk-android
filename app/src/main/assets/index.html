@@ -105,13 +105,15 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 <div class="field full"><label>صورة المحل أو النشاط</label><input id="editBusinessMedia" placeholder="سيظهر مسار الصورة بعد اختيارها"><input id="editBusinessMediaFile" type="file" accept="image/*"><div class="smallnote" id="editBusinessMediaStatus">اختار صورة من معرض الموبايل ثم اضغط رفع الصورة.</div><button type="button" id="uploadBusinessImage" class="secondary">رفع صورة النشاط من الجهاز</button></div>
 <div class="field full"><label>وصف النشاط وتفاصيله</label><textarea id="editBusinessDescription" rows="4"></textarea></div></div><div class="rowbtn"><button id="saveAdminBusiness">حفظ بيانات النشاط</button><button id="cancelAdminBusiness" class="secondary">إلغاء</button></div></div>
 </section>
-<section class="admin-section hidden" id="admin-products"><h3>🛍️ إدارة المنتجات والعروض لكل محل</h3><div class="field"><label>اختار النشاط</label><select id="adminProductBusiness"></select></div><div class="rowbtn"><button id="newAdminProduct">＋ إضافة منتج</button><button id="reloadAdminProducts" class="secondary">تحديث المنتجات</button></div><div id="adminProductList" class="admin-list">اختار نشاطًا لعرض منتجاته.</div>
+<section class="admin-section hidden" id="admin-products"><h3>🛍️ إدارة المنتجات والعروض لكل محل</h3><div class="field"><label>اختار النشاط</label><select id="adminProductBusiness"></select></div><div class="rowbtn"><button id="newAdminProduct">＋ إضافة منتج</button><button id="reloadAdminProducts" class="secondary">تحديث المنتجات</button></div>
+<div class="admin-editor" id="adminBulkBox"><h4>📦 إضافة منتجات بالجملة</h4><p class="smallnote">كل سطر منتج واحد: الاسم | الحجم/الوحدة | السعر. السعر اختياري. ارفع CSV أو الصق القائمة كلها.</p><div class="field"><label>ملف منتجات CSV (اختياري)</label><input id="adminBulkFile" type="file" accept=".csv,.txt,text/csv,text/plain"></div><div class="field"><label>قائمة المنتجات</label><textarea id="adminBulkText" rows="6" placeholder="زيت عباد الشمس | 1 لتر | 85&#10;سكر | كيلو | 30&#10;مكرونة | كيس 400 جرام |"></textarea></div><div class="rowbtn"><button type="button" id="adminBulkImport">معاينة ثم إضافة الكل</button></div><div class="smallnote" id="adminBulkStatus">الإضافة بالجملة لا تحذف المنتجات الحالية.</div></div><div id="adminProductList" class="admin-list">اختار نشاطًا لعرض منتجاته.</div>
 <div id="adminProductEditor" class="admin-editor hidden"><h4>بيانات المنتج</h4><input id="editProductId" type="hidden"><div class="admin-grid"><div class="field"><label>اسم المنتج أو العرض</label><input id="editProductName"></div><div class="field"><label>السعر</label><input id="editProductPrice" type="number" min="0" step="0.01"></div><div class="field"><label>الوحدة</label><input id="editProductUnit" placeholder="قطعة / كيلو / عبوة"></div><div class="field full"><label>صورة المنتج أو العرض</label><input id="editProductImage" placeholder="سيظهر مسار الصورة بعد اختيارها"><input id="editProductImageFile" type="file" accept="image/*"><div class="smallnote" id="editProductImageStatus">اختار صورة من معرض الموبايل ثم اضغط رفع الصورة.</div><button type="button" id="uploadProductImage" class="secondary">رفع صورة المنتج من الجهاز</button></div><div class="field full"><label>وصف المنتج أو العرض</label><textarea id="editProductDescription" rows="3"></textarea></div><label><input id="editProductAvailable" type="checkbox" checked> متاح للعرض</label></div><div class="rowbtn"><button id="saveAdminProduct">حفظ المنتج</button><button id="cancelAdminProduct" class="secondary">إلغاء</button></div></div>
 </section>
 <section class="admin-section hidden" id="admin-ads"><h3>⭐ إدارة الإعلانات المميزة</h3><div id="adminAdList" class="admin-list">جاري التحميل...</div></section>
 <section class="admin-section hidden" id="admin-payments"><h3>💳 إعدادات الدفع وطلبات المراجعة</h3><div class="field"><label>رقم محفظة اتصالات كاش</label><input id="adminCashNumber" inputmode="tel" placeholder="أدخل رقم المحفظة"></div><div class="rowbtn"><button id="saveCashNumber">حفظ رقم المحفظة</button></div><hr><div id="adminPayments" class="smallnote">لا توجد طلبات محملة.</div></section>
 </div>
-<section id="ownerProductsPanel" class="panel hidden admin-dashboard"><h2>🛍️ إدارة منتجات محلك</h2><p class="smallnote">أضف منتجاتك وأسعارك، وعدّل أو احذف منتجات نشاطك فقط. المنتجات المتاحة تظهر للزوار في البحث والمقارنة.</p><div class="field"><label>اختار نشاطك</label><select id="ownerProductBusiness"></select></div><div class="rowbtn"><button type="button" id="ownerNewProduct">＋ إضافة منتج أو عرض</button><button type="button" id="ownerReloadProducts" class="secondary">تحديث</button></div><div id="ownerProductList" class="admin-list">جاري تحميل أنشطتك...</div><div id="ownerProductEditor" class="admin-editor hidden"><h4>بيانات المنتج</h4><input id="ownerEditProductId" type="hidden"><div class="admin-grid"><div class="field"><label>اسم المنتج</label><input id="ownerEditProductName" placeholder="مثال: زيت عباد الشمس"></div><div class="field"><label>السعر بالجنيه</label><input id="ownerEditProductPrice" type="number" min="0" step="0.01"></div><div class="field"><label>الوحدة أو الحجم</label><input id="ownerEditProductUnit" placeholder="عبوة 1 لتر / كيلو / قطعة"></div><div class="field full"><label>صورة المنتج من الموبايل (اختياري)</label><input id="ownerEditProductImage" type="hidden"><input id="ownerEditProductImageFile" type="file" accept="image/*"><div class="smallnote" id="ownerEditProductImageStatus">اختار صورة من معرض الموبايل ثم اضغط رفع الصورة.</div><button type="button" id="ownerUploadProductImage" class="secondary">رفع الصورة من الجهاز</button></div><div class="field full"><label>تفاصيل المنتج أو العرض</label><textarea id="ownerEditProductDescription" rows="3"></textarea></div><label><input id="ownerEditProductAvailable" type="checkbox" checked> إظهار المنتج للزوار</label></div><div class="rowbtn"><button type="button" id="ownerSaveProduct">حفظ المنتج</button><button type="button" id="ownerCancelProduct" class="secondary">إلغاء</button></div></div></section>
+<section id="ownerProductsPanel" class="panel hidden admin-dashboard"><h2>🛍️ إدارة منتجات محلك</h2><p class="smallnote">أضف منتجاتك وأسعارك، وعدّل أو احذف منتجات نشاطك فقط. المنتجات المتاحة تظهر للزوار في البحث والمقارنة.</p><div class="field"><label>اختار نشاطك</label><select id="ownerProductBusiness"></select></div><div class="rowbtn"><button type="button" id="ownerNewProduct">＋ إضافة منتج أو عرض</button><button type="button" id="ownerReloadProducts" class="secondary">تحديث</button></div>
+<div class="admin-editor" id="ownerBulkBox"><h4>📦 إضافة منتجات بالجملة</h4><p class="smallnote">كل سطر منتج واحد بهذا الترتيب: الاسم | الحجم/الوحدة | السعر. اترك السعر فارغًا لو السعر عند الاستفسار. تقدر تلصق قائمة أو ترفع CSV.</p><div class="field"><label>ملف منتجات CSV (اختياري)</label><input id="ownerBulkFile" type="file" accept=".csv,.txt,text/csv,text/plain"></div><div class="field"><label>قائمة المنتجات</label><textarea id="ownerBulkText" rows="6" placeholder="زيت عباد الشمس | 1 لتر | 85&#10;سكر | كيلو | 30&#10;مكرونة | كيس 400 جرام |"></textarea></div><div class="rowbtn"><button type="button" id="ownerBulkImport">معاينة ثم إضافة الكل</button></div><div class="smallnote" id="ownerBulkStatus">لن يتم حذف أو تعديل أي منتج موجود؛ سيتم إضافة المنتجات الجديدة فقط.</div></div><div id="ownerProductList" class="admin-list">جاري تحميل أنشطتك...</div><div id="ownerProductEditor" class="admin-editor hidden"><h4>بيانات المنتج</h4><input id="ownerEditProductId" type="hidden"><div class="admin-grid"><div class="field"><label>اسم المنتج</label><input id="ownerEditProductName" placeholder="مثال: زيت عباد الشمس"></div><div class="field"><label>السعر بالجنيه</label><input id="ownerEditProductPrice" type="number" min="0" step="0.01"></div><div class="field"><label>الوحدة أو الحجم</label><input id="ownerEditProductUnit" placeholder="عبوة 1 لتر / كيلو / قطعة"></div><div class="field full"><label>صورة المنتج من الموبايل (اختياري)</label><input id="ownerEditProductImage" type="hidden"><input id="ownerEditProductImageFile" type="file" accept="image/*"><div class="smallnote" id="ownerEditProductImageStatus">اختار صورة من معرض الموبايل ثم اضغط رفع الصورة.</div><button type="button" id="ownerUploadProductImage" class="secondary">رفع الصورة من الجهاز</button></div><div class="field full"><label>تفاصيل المنتج أو العرض</label><textarea id="ownerEditProductDescription" rows="3"></textarea></div><label><input id="ownerEditProductAvailable" type="checkbox" checked> إظهار المنتج للزوار</label></div><div class="rowbtn"><button type="button" id="ownerSaveProduct">حفظ المنتج</button><button type="button" id="ownerCancelProduct" class="secondary">إلغاء</button></div></div></section>
 <section id="featuredSection"><div class="section-head featured-head"><h2>⭐ إعلانات مميزة</h2><button type="button" class="featured-request-btn" id="featuredRequestBtn">اطلب إعلانك هنا</button></div><div class="muted" style="margin:-5px 2px 11px">عروض وخدمات مميزة من المحلات وأصحاب الأنشطة</div><div id="featuredAds" class="cards"><div class="empty">جاري تحميل الإعلانات...</div></div></section>
 <div class="section-head"><h2>دور على اللي محتاجه</h2><span class="muted">اختار القسم</span></div>
 <div class="categories" id="categories">
@@ -313,6 +315,52 @@ async function runProductSearch(){
  }catch(e){console.error('Product search failed',e);box.innerHTML='<div class="product-search-title">تعذر البحث</div><div class="empty">حصلت مشكلة في تحميل الأسعار: '+esc(e.message||'حاول مرة أخرى')+'</div>';}
 }
 function scheduleProductSearch(){clearTimeout(productSearchTimer);const q=document.getElementById('q').value.trim();if(!q){document.getElementById('productSearchResults').classList.add('hidden');document.getElementById('productSearchResults').innerHTML='';return;}productSearchTimer=setTimeout(runProductSearch,450);}
+
+function parseBulkProductText(raw){
+ const lines=String(raw||'').replace(/^\\uFEFF/,'').split(/\\r?\\n/).map(x=>x.trim()).filter(Boolean);
+ const rows=[];
+ for(let i=0;i<lines.length;i++){
+  const line=lines[i];let parts;
+  if(line.includes('|'))parts=line.split('|').map(x=>x.trim());
+  else if(line.includes('\\t'))parts=line.split('\\t').map(x=>x.trim());
+  else parts=line.split(',').map(x=>x.trim().replace(/^"|"$/g,''));
+  if(i===0&&/^(اسم|name|المنتج|product)$/i.test(parts[0]||''))continue;
+  const name=parts[0]||'',unit=parts[1]||'',priceText=(parts[2]||'').replace(/[٬,]/g,'').replace(/جنيه|جنيهًا|ج/g,'').trim();
+  if(name.length<2)continue;
+  const price=priceText===''?null:Number(priceText);
+  if(priceText!==''&&(!Number.isFinite(price)||price<0))throw new Error('السعر غير صحيح في السطر رقم '+(i+1)+': '+line);
+  rows.push({name,unit,price,description:parts.slice(3).join(' | ')||null,image_path:null,is_available:true});
+ }
+ return rows;
+}
+async function importBulkProducts(scope){
+ const owner=scope==='owner',businessId=document.getElementById(owner?'ownerProductBusiness':'adminProductBusiness').value;
+ const input=document.getElementById(owner?'ownerBulkText':'adminBulkText'),status=document.getElementById(owner?'ownerBulkStatus':'adminBulkStatus');
+ if(!businessId)return alert('اختار المحل الأول.');
+ let rows;try{rows=parseBulkProductText(input.value);}catch(e){status.textContent='راجع القائمة: '+e.message;return alert(e.message);}
+ if(!rows.length)return alert('اكتب المنتجات، كل منتج في سطر.');
+ const preview=rows.slice(0,8).map((p,i)=>(i+1)+'. '+p.name+' — '+(p.unit||'بدون حجم')+' — '+(p.price===null?'السعر عند الاستفسار':p.price+' جنيه')).join('\\n');
+ if(!confirm('هنضيف '+rows.length+' منتج للمحل المحدد.\\n\\n'+preview+(rows.length>8?'\\n... وباقي '+(rows.length-8)+' منتجات':'')+'\\n\\nهل تؤكد الإضافة؟'))return;
+ const businessField={business_id:businessId};
+ status.textContent='جاري إضافة '+rows.length+' منتج...';
+ let added=0;
+ for(let i=0;i<rows.length;i+=100){
+  const batch=rows.slice(i,i+100).map(p=>({...p,...businessField}));
+  const {error}=await sb.from('business_products').insert(batch);
+  if(error){status.textContent='تمت إضافة '+added+' من '+rows.length+'؛ توقفنا بسبب خطأ: '+error.message;alert(status.textContent);if(owner)await loadOwnerProducts();else await loadAdminProducts();return;}
+  added+=batch.length;status.textContent='تمت إضافة '+added+' من '+rows.length+'...';
+ }
+ status.textContent='تمت إضافة '+added+' منتج بنجاح. لم نحذف أو نغيّر أي منتج سابق.';
+ input.value='';const file=document.getElementById(owner?'ownerBulkFile':'adminBulkFile');if(file)file.value='';
+ if(owner)await loadOwnerProducts();else await loadAdminProducts();
+ alert('تمت إضافة '+added+' منتج للمحل بنجاح.');
+}
+function bindBulkFile(scope){
+ const owner=scope==='owner',file=document.getElementById(owner?'ownerBulkFile':'adminBulkFile'),input=document.getElementById(owner?'ownerBulkText':'adminBulkText'),status=document.getElementById(owner?'ownerBulkStatus':'adminBulkStatus');
+ file.onchange=async()=>{const f=file.files?.[0];if(!f)return;try{input.value=await f.text();status.textContent='تم تحميل الملف: '+f.name+' — راجع القائمة ثم اضغط إضافة الكل.';}catch(e){status.textContent='تعذر قراءة الملف: '+e.message;}};
+ document.getElementById(owner?'ownerBulkImport':'adminBulkImport').onclick=()=>importBulkProducts(scope);
+}
+
 async function loadOwnerBusinesses(){
  const button=document.getElementById('ownerProductsBtn'),select=document.getElementById('ownerProductBusiness');
  if(!currentUser){ownerBusinesses=[];button.classList.add('hidden');return;}
@@ -404,6 +452,8 @@ document.getElementById('mainFbLoginBtn').onclick=()=>signInWithSocialProvider('
 document.getElementById('logoutBtn').onclick=async()=>{await sb.auth.signOut();await refreshAuth();};
 document.getElementById('ownerProductsBtn').onclick=openOwnerProducts;
 document.getElementById('ownerProductBusiness').onchange=loadOwnerProducts;
+bindBulkFile('owner');
+bindBulkFile('admin');
 document.getElementById('ownerNewProduct').onclick=()=>editOwnerProduct(null);
 document.getElementById('ownerReloadProducts').onclick=loadOwnerProducts;
 document.getElementById('ownerSaveProduct').onclick=saveOwnerProduct;
