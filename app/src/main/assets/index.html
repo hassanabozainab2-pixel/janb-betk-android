@@ -70,7 +70,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
  <div class="login-foot">أهلاً بك في جنب بيتك</div>
 </section>
 <div id="appShell" class="hidden">
-<header><div class="top"><div class="brand-area"><div><div class="brand">جنب بيتك</div><div class="tag">كل اللي تحتاجه حواليك</div></div><div class="account-menu"><button class="account-toggle" id="accountToggle" type="button">حسابك ▾</button><div class="account-dropdown hidden" id="accountDropdown"><div id="accountState" class="smallnote">سجّل الدخول لإضافة نشاطك ومتابعة طلباتك.</div><div class="rowbtn"><button id="logoutBtn" class="hidden">تسجيل خروج</button><button id="adminBtn" class="hidden">لوحة المدير</button></div></div></div></div><div class="pill" id="connectionStatus">إسنا · جاري الاتصال</div></div><div class="refresh-row"><button id="refreshAppBtn" class="refresh-btn" type="button">↻ تحديث التطبيق</button><span id="refreshStatus" class="refresh-status">تحديث الإعلانات والأنشطة الجديدة</span></div><div class="search"><input id="q" placeholder="بتدور على إيه؟ محل، صنايعي، خدمة..." aria-label="بحث"><button id="searchBtn">بحث</button></div></header>
+<header><div class="top"><div class="brand-area"><div><div class="brand">جنب بيتك</div><div class="tag">كل اللي تحتاجه حواليك</div></div><div class="account-menu"><button class="account-toggle" id="accountToggle" type="button">حسابك ▾</button><div class="account-dropdown hidden" id="accountDropdown"><div id="accountState" class="smallnote">سجّل الدخول لإضافة نشاطك ومتابعة طلباتك.</div><div class="rowbtn"><button id="logoutBtn" class="hidden">تسجيل خروج</button><button id="adminBtn" class="hidden">لوحة المدير</button><button id="reviewRequestsBtn" class="hidden">📋 مراجعة الطلبات</button></div></div></div></div><div class="pill" id="connectionStatus">إسنا · جاري الاتصال</div></div><div class="refresh-row"><button id="refreshAppBtn" class="refresh-btn" type="button">↻ تحديث التطبيق</button><span id="refreshStatus" class="refresh-status">تحديث الإعلانات والأنشطة الجديدة</span></div><div class="search"><input id="q" placeholder="بتدور على إيه؟ محل، صنايعي، خدمة..." aria-label="بحث"><button id="searchBtn">بحث</button></div></header>
 <main>
 <div id="adminPanel" class="panel hidden admin-dashboard">
 <h2>🛠️ مركز إدارة جنب بيتك</h2><p class="smallnote">تحكم شامل في المحتوى والتصميم والأنشطة والمنتجات والإعلانات وإعدادات التطبيق. التغييرات تُحفظ على السحابة.</p>
@@ -285,6 +285,7 @@ async function refreshAuth(){
  document.getElementById('logoutBtn').classList.toggle('hidden',!currentUser);
  
  document.getElementById('adminBtn').classList.toggle('hidden',currentUser?.app_metadata?.role!=='admin');
+ document.getElementById('reviewRequestsBtn').classList.toggle('hidden',currentUser?.app_metadata?.role!=='admin');
 }
 document.getElementById('accountToggle').onclick=()=>document.getElementById('accountDropdown').classList.toggle('hidden');
 document.addEventListener('click',e=>{const menu=document.querySelector('.account-menu');if(menu&&!menu.contains(e.target))document.getElementById('accountDropdown').classList.add('hidden');});
@@ -466,6 +467,7 @@ async function refreshAppData(){
 }
 document.getElementById('refreshAppBtn').onclick=refreshAppData;
 document.getElementById('adminBtn').onclick=adminPanel;
+document.getElementById('reviewRequestsBtn').onclick=async()=>{document.getElementById('accountDropdown').classList.add('hidden');await adminPanel();adminTab('payments');document.getElementById('adminPanel').scrollIntoView({behavior:'smooth',block:'start'});};
 document.querySelectorAll('.admin-tab').forEach(b=>b.onclick=()=>adminTab(b.dataset.adminTab));
 document.getElementById('previewAppConfig').onclick=()=>{janbConfig=formToConfig();applyJanbConfig();document.getElementById('adminConfigStatus').textContent='دي معاينة مؤقتة — اضغط حفظ ونشر لتثبيتها.';};
 document.getElementById('saveAppConfig').onclick=saveJanbConfig;
