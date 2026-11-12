@@ -98,6 +98,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 <div class="smallnote" id="cashNumber">رقم محفظة اتصالات كاش سيظهر هنا بعد إدخاله من إعدادات المدير.</div>
 <button class="submit" type="submit">إرسال النشاط وطلب الدفع للمراجعة</button><button class="rowbtn" type="button" id="backToPlan" style="margin-top:8px">رجوع لاختيار الباقة</button></form></div></div>
 <div class="modal" id="adModal"><div class="sheet"><button class="close" id="adCloseBtn">إغلاق ✕</button><h2>طلب إعلان مميز</h2><form id="adForm"><div class="field"><label>عنوان الإعلان *</label><input name="title" required maxlength="100"></div><div class="field"><label>تفاصيل الإعلان ومميزاته أو العرض</label><textarea name="description" maxlength="500" placeholder="اكتب مميزات المنتج أو الخدمة والعرض وطرق الاستفادة..."></textarea></div><div class="field"><label>رقم الهاتف</label><input name="phone" inputmode="tel"></div><div class="field"><label>واتساب</label><input name="whatsapp" inputmode="tel"></div><div class="field"><label>المساحة المطلوبة</label><select name="slot"><option value="1">المساحة الأولى</option><option value="2">المساحة الثانية</option><option value="3">المساحة الثالثة</option></select></div><div class="field"><label>صورة أو فيديو الإعلان *</label><input name="media" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime" required></div><div class="receipt-upload"><label for="featuredReceiptInput">📸 ارفع صورة إيصال تحويل اتصالات كاش *</label><input id="featuredReceiptInput" name="receipt" type="file" accept="image/jpeg,image/png,image/webp" required><div class="receipt-help">اختار صورة سكرين شوت التحويل من موبايلك. لازم ترفع الإيصال قبل إرسال طلب الإعلان.</div></div><div class="panel"><b>تفاصيل الاشتراك والإعلان</b><div class="smallnote" id="adCashInfo">سعر الإعلان 100 جنيه لمدة أسبوع. الدفع عن طريق محفظة اتصالات كاش، مع رفع صورة الإيصال. لا تحول قبل ظهور رقم المحفظة والتأكد منه.</div></div><div id="adSubmitStatus" class="smallnote" role="status" aria-live="polite" style="margin-top:10px;min-height:24px"></div><button class="submit" id="sendFeaturedAdBtn" type="button">إرسال طلب الإعلان للمراجعة</button></form></div></div>
+<section class="detail-page" id="businessDetailPage" aria-label="صفحة النشاط"><div class="detail-top"><button type="button" class="detail-back" id="businessDetailClose">← رجوع</button><div class="detail-top-title" id="businessDetailHeader">تفاصيل النشاط</div></div><div id="businessDetailContent" class="detail-wrap"><div class="empty">جاري تحميل بيانات النشاط...</div></div></section>
 <section class="detail-page" id="featuredDetailModal" aria-label="تفاصيل الإعلان"><div class="detail-top"><button type="button" class="detail-back" id="featuredDetailClose">← رجوع</button><div class="detail-top-title">تفاصيل الإعلان المميز</div></div><div id="featuredDetailContent" class="detail-wrap"></div></section>
 <script>
 const SUPABASE_URL='https://qedaojphnxwoptitfzzk.supabase.co';
@@ -153,6 +154,28 @@ async function loadFeaturedAds(){
   console.error(e);
  }
 }
+let pendingBusinessId=new URLSearchParams(location.search).get('business')||localStorage.getItem('janb_pending_business')||'';
+function closeBusinessDetail(){document.getElementById('businessDetailPage').classList.remove('show');localStorage.removeItem('janb_pending_business');pendingBusinessId='';}
+document.getElementById('businessDetailClose').onclick=closeBusinessDetail;
+async function openBusinessDetail(id){
+ if(!id||!/^[0-9a-fA-F-]{36}$/.test(id))return;
+ pendingBusinessId=id;localStorage.setItem('janb_pending_business',id);
+ const page=document.getElementById('businessDetailPage'),box=document.getElementById('businessDetailContent');
+ page.classList.add('show');page.scrollTop=0;box.innerHTML='<div class="empty">جاري تحميل صفحة النشاط...</div>';
+ try{
+  const {data:x,error}=await sb.from('businesses').select('id,name,business_type,category,phone,whatsapp,address,description,media_path').eq('id',id).eq('status','approved').maybeSingle();
+  if(error)throw error;
+  if(!x){box.innerHTML='<div class="empty">النشاط غير متاح حاليًا أو لم يتم اعتماده بعد.</div>';return;}
+  const image=x.media_path?sb.storage.from('janb-media').getPublicUrl(x.media_path).data.publicUrl:'';
+  const phone=(x.phone||'').replace(/[^\d+]/g,'');
+  const wa=(x.whatsapp||x.phone||'').replace(/\D/g,'').replace(/^0/,'20');
+  const hero=image?'<img class="detail-hero" src="'+esc(image)+'" alt="'+esc(x.name)+'">':'<div class="detail-hero" style="height:190px;display:grid;place-items:center;font-size:72px">🏪</div>';
+  const contact=(phone?'<a href="tel:'+esc(phone)+'">☎ اتصال بالمحل</a>':'')+(wa?'<a class="whatsapp" target="_blank" rel="noopener" href="https://wa.me/'+esc(wa)+'">واتساب مباشر</a>':'');
+  document.getElementById('businessDetailHeader').textContent=x.name;
+  box.innerHTML=hero+'<div class="detail-card"><div class="ad-slot">نشاط على جنب بيتك</div><h1 class="detail-title">'+esc(x.name)+'</h1><div class="smallnote">'+esc(x.category||'')+' · '+esc(x.address||'إسنا')+'</div><div class="detail-description">'+esc(x.description||'أهلاً بك في صفحة النشاط.')+'</div></div>'+(contact?'<div class="detail-card"><h2 class="detail-section-title">تواصل مع النشاط</h2><div class="detail-contact">'+contact+'</div></div>':'')+'<div class="detail-card"><h2 class="detail-section-title">🛍️ المنتجات والعروض</h2><div class="empty">لا توجد منتجات أو عروض مضافة حاليًا لهذا النشاط. ستظهر هنا داخل التطبيق عند إضافتها.</div></div>';
+  page.scrollTop=0;
+ }catch(e){console.error('Business detail load failed',e);box.innerHTML='<div class="empty">تعذر تحميل صفحة النشاط. تأكد من الاتصال بالإنترنت وحاول مرة أخرى.</div>';}
+}
 async function loadCloudListings(){
  const status=document.getElementById('connectionStatus');
  try{
@@ -167,7 +190,7 @@ function render(){
  const rows=cloudRows.filter(x=>(selectedType==='الكل'||x.type===selectedType)&&(!selectedCategory||x.category===selectedCategory)&&[x.name,x.category,x.area,x.description].join(' ').toLowerCase().includes(q));
  document.getElementById('count').textContent=rows.length+' نتيجة';cards.innerHTML='';
  if(!rows.length){cards.innerHTML='<div class="empty">لا توجد أنشطة منشورة مطابقة حاليًا.</div>';return;}
- rows.forEach(x=>{const el=document.createElement('article');el.className='listing';const p=(x.phone||'').replace(/[^\d+]/g,'');const wa=(x.whatsapp||x.phone||'').replace(/\D/g,'').replace(/^0/,'20');el.innerHTML='<div class="avatar">🏪</div><div style="min-width:0;flex:1"><h3>'+esc(x.name)+'</h3><p>'+esc(x.category)+' · '+esc(x.type)+'</p><div class="muted">'+esc(x.area)+' — '+esc(x.description)+'</div><div class="actions"><a href="tel:'+p+'">اتصال</a><a href="https://wa.me/'+wa+'" target="_blank" rel="noopener">واتساب</a></div></div>';cards.appendChild(el);});
+ rows.forEach(x=>{const el=document.createElement('article');el.className='listing';el.style.cursor='pointer';const p=(x.phone||'').replace(/[^\d+]/g,'');const wa=(x.whatsapp||x.phone||'').replace(/\D/g,'').replace(/^0/,'20');el.innerHTML='<div class="avatar">🏪</div><div style="min-width:0;flex:1"><h3>'+esc(x.name)+'</h3><p>'+esc(x.category)+' · '+esc(x.type)+'</p><div class="muted">'+esc(x.area)+' — '+esc(x.description)+'</div><div class="actions"><a href="tel:'+p+'">اتصال</a><a href="https://wa.me/'+wa+'" target="_blank" rel="noopener">واتساب</a></div><div class="smallnote">اضغط لفتح صفحة النشاط</div></div>';el.addEventListener('click',e=>{if(e.target.closest('a'))return;openBusinessDetail(x.id);});cards.appendChild(el);});
 }
 document.getElementById('searchBtn').onclick=render;document.getElementById('q').addEventListener('input',render);
 document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');selectedType=b.dataset.type;render();});
@@ -185,6 +208,7 @@ document.getElementById('accountToggle').onclick=()=>document.getElementById('ac
 document.addEventListener('click',e=>{const menu=document.querySelector('.account-menu');if(menu&&!menu.contains(e.target))document.getElementById('accountDropdown').classList.add('hidden');});
 async function signInWithSocialProvider(provider){
  try{
+  if(pendingBusinessId)localStorage.setItem('janb_pending_business',pendingBusinessId);
   const {error}=await sb.auth.signInWithOAuth({provider,options:{redirectTo:'janbbait://auth/callback'}});
   if(error)alert('تعذر بدء تسجيل الدخول: '+error.message);
  }catch(e){alert('حصل خطأ أثناء فتح تسجيل الدخول: '+e.message);}
@@ -343,7 +367,7 @@ async function refreshAppData(){
 document.getElementById('refreshAppBtn').onclick=refreshAppData;
 document.getElementById('adminBtn').onclick=adminPanel;
 sb.auth.onAuthStateChange(()=>setTimeout(refreshAuth,0));
-(async()=>{await refreshAuth();await Promise.all([loadCloudListings(),loadFeaturedAds()]);})();
+(async()=>{await refreshAuth();await Promise.all([loadCloudListings(),loadFeaturedAds()]);if(pendingBusinessId&&currentUser)await openBusinessDetail(pendingBusinessId);})();
 </script>
 </div>
 </body></html>
