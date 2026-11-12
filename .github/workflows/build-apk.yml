@@ -1,35 +1,57 @@
-name: Build Android APK
+name: Build Signed Android APK
+
 on:
   workflow_dispatch:
-  push:
-    branches: [ main, master ]
+
 permissions:
   contents: read
-  actions: read
+
 jobs:
-  build:
+  build-release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Set up Java
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
+
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
         with:
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+
       - name: Install Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
-      - name: Build debug APK
-        run: gradle assembleDebug
-      - name: Upload APK
+
+      - name: Prepare signing key
+        env:
+          SIGNING_KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: |
+          test -n "$SIGNING_KEYSTORE_BASE64" || (echo "Missing SIGNING_KEYSTORE_BASE64 secret" && exit 1)
+          test -n "$SIGNING_STORE_PASSWORD" || (echo "Missing SIGNING_STORE_PASSWORD secret" && exit 1)
+          test -n "$SIGNING_KEY_ALIAS" || (echo "Missing SIGNING_KEY_ALIAS secret" && exit 1)
+          test -n "$SIGNING_KEY_PASSWORD" || (echo "Missing SIGNING_KEY_PASSWORD secret" && exit 1)
+          echo "$SIGNING_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/janb-betk-release.jks"
+          echo "SIGNING_STORE_FILE=$RUNNER_TEMP/janb-betk-release.jks" >> "$GITHUB_ENV"
+          echo "SIGNING_STORE_PASSWORD=$SIGNING_STORE_PASSWORD" >> "$GITHUB_ENV"
+          echo "SIGNING_KEY_ALIAS=$SIGNING_KEY_ALIAS" >> "$GITHUB_ENV"
+          echo "SIGNING_KEY_PASSWORD=$SIGNING_KEY_PASSWORD" >> "$GITHUB_ENV"
+
+      - name: Build signed release APK
+        run: gradle assembleRelease
+
+      - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: janb-betk-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: janb-betk-release-apk
+          path: app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
