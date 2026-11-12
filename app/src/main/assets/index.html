@@ -24,13 +24,52 @@ main{max-width:760px;margin:auto;padding:17px 15px 90px}.section-head{display:fl
 .panel h3{margin:0 0 10px;font-size:16px}.rowbtn{display:flex;gap:8px;flex-wrap:wrap}.ad-request-cta{display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;border:0;border-radius:22px;padding:10px 13px;background:linear-gradient(135deg,#f5d77f,#e2b64f);color:#382b0c;font:inherit;font-size:12px;font-weight:900;box-shadow:0 5px 14px #9b741d30;cursor:pointer;transition:transform .18s,box-shadow .18s}.ad-request-cta:active{transform:scale(.96)}.ad-request-cta:before{content:'✦';font-size:14px}.section-head.featured-head{margin-top:10px}.rowbtn button{border:0;border-radius:10px;padding:10px 12px;background:var(--green2);color:var(--green);font-weight:700}
 .smallnote{font-size:12px;color:var(--muted);line-height:1.7}.hidden{display:none!important}
 footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
+
+/* شاشة الدخول الجديدة */
+.login-gate{min-height:100svh;background:linear-gradient(180deg,#eaf7ef 0%,#fff 52%,#f5fbf6 100%);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:28px 18px 24px;overflow:hidden;position:relative}
+.login-gate:before,.login-gate:after{content:"";position:absolute;width:230px;height:230px;border-radius:50%;background:#d8efdf;filter:blur(2px);z-index:0;opacity:.75}
+.login-gate:before{top:-120px;right:-90px}.login-gate:after{bottom:90px;left:-130px;background:#f8edc9}
+.login-content{position:relative;z-index:1;width:min(100%,480px);text-align:center}
+.login-logo{margin:16px auto 12px;width:176px;height:146px;border-radius:34px;background:linear-gradient(145deg,#fff,#f4fbf6);border:1px solid #dcefe2;box-shadow:0 14px 34px #145b3518;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.login-mark{width:82px;height:67px;position:relative;margin-bottom:4px}
+.login-roof{position:absolute;left:9px;top:4px;width:64px;height:48px;border-left:8px solid #126b4d;border-top:8px solid #126b4d;transform:rotate(45deg);border-radius:5px}
+.login-house{position:absolute;left:24px;top:26px;width:39px;height:31px;border:6px solid #126b4d;border-top:0;border-radius:2px}
+.login-window{position:absolute;left:37px;top:34px;width:10px;height:10px;background:#e2b64f;box-shadow:14px 0 #e2b64f}
+.login-cart{position:absolute;right:-1px;bottom:0;font-size:27px;background:#fff;border-radius:50%;line-height:1}
+.login-logo-name{font-size:28px;font-weight:950;letter-spacing:-1px;color:#126b4d}.login-logo-name span{color:#d49c22}
+.login-slogan{font-size:16px;font-weight:850;color:#155d40;margin:14px 0 5px}
+.login-sub{font-size:13px;color:#64766b;line-height:1.8;margin:0 auto 18px;max-width:320px}
+.login-scene{height:180px;border-radius:24px;margin:16px 0 20px;position:relative;overflow:hidden;background:linear-gradient(180deg,#dff4ff,#f7fff7 65%,#cde8d1);border:1px solid #d7e9dc;box-shadow:0 8px 22px #154b3010}
+.login-sun{position:absolute;width:58px;height:58px;border-radius:50%;background:#f6d77e;right:26px;top:18px;opacity:.9}
+.login-shop{position:absolute;bottom:0;width:29%;height:98px;background:#fff;border:2px solid #267451;border-bottom:0;border-radius:8px 8px 0 0;box-shadow:inset 0 12px #e2b64f}
+.login-shop:before{content:"";position:absolute;left:-7px;right:-7px;top:13px;height:24px;background:repeating-linear-gradient(90deg,#126b4d 0 15px,#fff 15px 30px);border-radius:5px}
+.login-shop:after{content:"";position:absolute;left:12px;right:12px;bottom:0;height:38px;background:#dff1e5;border:2px solid #267451;border-bottom:0}
+.login-shop.one{left:5%;height:91px}.login-shop.two{left:36%;height:116px;width:28%;background:#fff8e8}.login-shop.three{right:5%;height:88px}
+.login-shop.two:before{background:repeating-linear-gradient(90deg,#d49c22 0 15px,#fff 15px 30px)}
+.login-benefits{display:flex;justify-content:space-around;gap:8px;margin:12px 0 18px;color:#176341;font-size:11px;font-weight:750}
+.login-benefits span{flex:1}.login-benefits b{display:block;font-size:22px;margin-bottom:4px}
+.facebook-main{width:100%;max-width:420px;border:0;border-radius:18px;background:linear-gradient(135deg,#1877f2,#0862d6);color:#fff;padding:17px 14px;font:inherit;font-size:17px;font-weight:900;box-shadow:0 9px 22px #1877f244;cursor:pointer}
+.login-foot{position:relative;z-index:1;color:#7b8a80;font-size:11px;text-align:center}
+.choice-options{display:grid;gap:10px;margin-top:15px}.choice-options button{border:1px solid #dce9df;background:#f5faf6;border-radius:14px;padding:15px;text-align:right;font:inherit;font-weight:850;color:#126b4d}
 </style>
 </head>
 <body>
-<header><div class="top"><div class="brand-area"><div><div class="brand">جنب بيتك</div><div class="tag">كل اللي تحتاجه حواليك</div></div><div class="account-menu"><button class="account-toggle" id="accountToggle" type="button">حسابك ▾</button><div class="account-dropdown hidden" id="accountDropdown"><div id="accountState" class="smallnote">سجّل الدخول لإضافة نشاطك ومتابعة طلباتك.</div><div class="rowbtn"><button id="fbLoginBtn" class="social-login facebook-login" type="button">f　الدخول بفيسبوك</button><button id="googleLoginBtn" class="social-login google-login" type="button">G　الدخول بجوجل</button><button id="loginBtn">البريد الإلكتروني / إنشاء حساب</button><button id="logoutBtn" class="hidden">تسجيل خروج</button><button id="adminBtn" class="hidden">لوحة المدير</button></div></div></div></div><div class="pill" id="connectionStatus">إسنا · جاري الاتصال</div></div><div class="search"><input id="q" placeholder="بتدور على إيه؟ محل، صنايعي، خدمة..." aria-label="بحث"><button id="searchBtn">بحث</button></div></header>
+<section id="loginGate" class="login-gate">
+ <div class="login-content">
+  <div class="login-logo"><div class="login-mark"><div class="login-roof"></div><div class="login-house"></div><div class="login-window"></div><div class="login-cart">🛒</div></div><div class="login-logo-name">جنب <span>بيتك</span></div></div>
+  <div class="login-slogan">كل اللي تحتاجه حواليك</div>
+  <p class="login-sub">محلات ومنتجات وخدمات قريبة منك… في مكان واحد</p>
+  <div class="login-scene"><div class="login-sun"></div><div class="login-shop one"></div><div class="login-shop two"></div><div class="login-shop three"></div></div>
+  <button id="mainFbLoginBtn" class="facebook-main" type="button">f　 تسجيل الدخول باستخدام فيسبوك</button>
+  <div class="login-benefits"><span><b>📍</b>خدمات بالقرب منك</span><span><b>🔒</b>حسابك بأمان</span><span><b>🤝</b>تجربة سهلة</span></div>
+ </div>
+ <div class="login-foot">أهلاً بك في جنب بيتك</div>
+</section>
+<div id="appShell" class="hidden">
+<header><div class="top"><div class="brand-area"><div><div class="brand">جنب بيتك</div><div class="tag">كل اللي تحتاجه حواليك</div></div><div class="account-menu"><button class="account-toggle" id="accountToggle" type="button">حسابك ▾</button><div class="account-dropdown hidden" id="accountDropdown"><div id="accountState" class="smallnote">سجّل الدخول لإضافة نشاطك ومتابعة طلباتك.</div><div class="rowbtn"><button id="logoutBtn" class="hidden">تسجيل خروج</button><button id="adminBtn" class="hidden">لوحة المدير</button></div></div></div></div><div class="pill" id="connectionStatus">إسنا · جاري الاتصال</div></div><div class="search"><input id="q" placeholder="بتدور على إيه؟ محل، صنايعي، خدمة..." aria-label="بحث"><button id="searchBtn">بحث</button></div></header>
 <main>
 <div id="adminPanel" class="panel hidden"><h3>لوحة المدير — طلبات الدفع والإعدادات</h3><div class="field"><label>رقم محفظة اتصالات كاش</label><input id="adminCashNumber" inputmode="tel" placeholder="أدخل رقم المحفظة"></div><div class="rowbtn"><button id="saveCashNumber">حفظ رقم المحفظة</button></div><hr><div id="adminPayments" class="smallnote">لا توجد طلبات محملة.</div></div>
-<section id="featuredSection"><div class="section-head featured-head"><h2>⭐ إعلانات مميزة</h2><button id="adRequestBtn" class="ad-request-cta" type="button">اطلب إعلانك هنا</button></div><div class="muted" style="margin:-5px 2px 11px">عروض وخدمات مميزة من المحلات وأصحاب الأنشطة</div><div id="featuredAds" class="cards"><div class="empty">جاري تحميل الإعلانات...</div></div></section>
+<section id="featuredSection"><div class="section-head featured-head"><h2>⭐ إعلانات مميزة</h2></div><div class="muted" style="margin:-5px 2px 11px">عروض وخدمات مميزة من المحلات وأصحاب الأنشطة</div><div id="featuredAds" class="cards"><div class="empty">جاري تحميل الإعلانات...</div></div></section>
 <div class="section-head"><h2>دور على اللي محتاجه</h2><span class="muted">اختار القسم</span></div>
 <div class="categories" id="categories">
 <button class="cat" data-cat="محلات"><span>🏪</span>محلات</button><button class="cat" data-cat="أكل ومشروبات"><span>🍽️</span>أكل ومشروبات</button><button class="cat" data-cat="صنايعية"><span>🧰</span>صنايعية</button><button class="cat" data-cat="صيانة"><span>🔧</span>صيانة</button><button class="cat" data-cat="توصيل"><span>🛵</span>توصيل</button><button class="cat" data-cat="خدمات منزلية"><span>🏠</span>خدمات منزلية</button>
@@ -41,6 +80,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 </main>
 <footer id="appFooter">جنب بيتك — دليل الخدمات السحابي.</footer>
 <button class="fab" id="addBtn">＋ أضف نشاطك</button>
+<div class="modal" id="choiceModal"><div class="sheet"><button class="close" id="choiceCloseBtn">إغلاق ✕</button><h2>أضف نشاطك على جنب بيتك</h2><p class="smallnote">اختار الخدمة اللي محتاجها</p><div class="choice-options"><button type="button" id="chooseAddBusiness">＋ إضافة نشاطك</button><button type="button" id="chooseFeaturedAd">⭐ طلب إعلان مميز</button></div></div></div>
 <div class="modal" id="modal"><div class="sheet"><button class="close" id="closeBtn">إغلاق ✕</button><h2>إضافة نشاط جديد</h2>
 <div id="planStep"><h3>اختار باقة الاشتراك أولًا</h3><div class="field"><label>مدة الاشتراك</label><select id="planChoice"><option value="weekly">أسبوعي — 50 جنيه / 7 أيام</option><option value="monthly">شهري — 200 جنيه / 30 يوم</option><option value="yearly">سنوي — 2000 جنيه / سنة</option></select></div><p class="smallnote">بعد اختيار الباقة هنفتح بيانات النشاط، وبعدها ترفع إيصال التحويل. النشاط يتفعل بعد مراجعة الإدارة وتأكيد الدفع.</p><button class="submit" type="button" id="continueToListing">متابعة وإدخال بيانات النشاط</button></div>
 <form id="listingForm" class="hidden">
@@ -112,9 +152,11 @@ document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySel
 document.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{selectedCategory=selectedCategory===b.dataset.cat?'':b.dataset.cat;document.querySelectorAll('.cat').forEach(x=>x.style.outline=x.dataset.cat===selectedCategory?'2px solid #126b4d':'none');render();});
 async function refreshAuth(){
  const {data}=await sb.auth.getSession();currentUser=data.session?.user||null;
+ document.getElementById('loginGate').classList.toggle('hidden',!!currentUser);
+ document.getElementById('appShell').classList.toggle('hidden',!currentUser);
  document.getElementById('accountState').textContent=currentUser?'تم تسجيل الدخول: '+currentUser.email:'سجّل الدخول لإضافة نشاطك ومتابعة طلباتك.';
  document.getElementById('logoutBtn').classList.toggle('hidden',!currentUser);
- document.getElementById('loginBtn').classList.toggle('hidden',!!currentUser);document.getElementById('fbLoginBtn').classList.toggle('hidden',!!currentUser);document.getElementById('googleLoginBtn').classList.toggle('hidden',!!currentUser);
+ 
  document.getElementById('adminBtn').classList.toggle('hidden',currentUser?.app_metadata?.role!=='admin');
 }
 document.getElementById('accountToggle').onclick=()=>document.getElementById('accountDropdown').classList.toggle('hidden');
@@ -125,20 +167,9 @@ async function signInWithSocialProvider(provider){
   if(error)alert('تعذر بدء تسجيل الدخول: '+error.message);
  }catch(e){alert('حصل خطأ أثناء فتح تسجيل الدخول: '+e.message);}
 }
-document.getElementById('fbLoginBtn').onclick=()=>signInWithSocialProvider('facebook');
-document.getElementById('googleLoginBtn').onclick=()=>signInWithSocialProvider('google');
-document.getElementById('loginBtn').onclick=async()=>{
- const email=prompt('اكتب بريدك الإلكتروني');if(!email)return;
- const password=prompt('اكتب كلمة مرور لا تقل عن 8 أحرف');if(!password)return;
- const choice=confirm('موافق = إنشاء حساب جديد. إلغاء = تسجيل دخول.');
- const result=choice?await sb.auth.signUp({email,password}):await sb.auth.signInWithPassword({email,password});
- if(result.error){alert(result.error.message);return;}
- if(choice&&!result.data.session)alert('تم إنشاء الحساب. افتح رسالة البريد لتأكيد الحساب ثم سجّل الدخول.');
- else alert('تم تسجيل الدخول بنجاح.');
- await refreshAuth();
-};
+document.getElementById('mainFbLoginBtn').onclick=()=>signInWithSocialProvider('facebook');
 document.getElementById('logoutBtn').onclick=async()=>{await sb.auth.signOut();await refreshAuth();};
-document.getElementById('adRequestBtn').onclick=async()=>{
+async function openFeaturedAdRequest(){
  if(!currentUser){document.getElementById('accountDropdown').classList.remove('hidden');alert('سجّل الدخول أو أنشئ حسابًا أولًا علشان نقدر نستقبل طلب الإعلان باسمك.');return;}
  const {data}=await sb.from('app_settings').select('value').eq('key','etisalat_cash_number').maybeSingle();
  document.getElementById('adCashInfo').textContent='سعر الإعلان 100 جنيه لمدة أسبوع. طريقة الدفع: محفظة اتصالات كاش. رقم المحفظة: '+(data?.value?.value||'لم يحدد المدير الرقم بعد')+'. ارفع إيصال التحويل مع صورة أو فيديو الإعلان. لا تحول قبل التأكد من الرقم.';
@@ -161,8 +192,11 @@ document.getElementById('adForm').onsubmit=async e=>{
   alert('تم إرسال طلب الإعلان والإيصال. سيظهر بعد مراجعة الإدارة وتأكيد الدفع.');e.target.reset();document.getElementById('adModal').classList.remove('show');
  }catch(err){alert('تعذر إرسال الطلب: '+(err.message||'خطأ غير معروف'));}
 };
-document.getElementById('addBtn').onclick=async()=>{
- if(!currentUser){alert('سجّل الدخول أو أنشئ حسابًا أولًا.');return;}
+document.getElementById('addBtn').onclick=()=>{if(!currentUser)return;document.getElementById('choiceModal').classList.add('show');};
+document.getElementById('choiceCloseBtn').onclick=()=>document.getElementById('choiceModal').classList.remove('show');
+document.getElementById('choiceModal').onclick=e=>{if(e.target.id==='choiceModal')e.currentTarget.classList.remove('show');};
+document.getElementById('chooseAddBusiness').onclick=async()=>{
+ document.getElementById('choiceModal').classList.remove('show');
  document.getElementById('planStep').classList.remove('hidden');
  document.getElementById('listingForm').classList.add('hidden');
  const {data}=await sb.from('app_settings').select('value').eq('key','etisalat_cash_number').maybeSingle();
@@ -170,6 +204,7 @@ document.getElementById('addBtn').onclick=async()=>{
  document.getElementById('cashNumber').textContent='حوّل قيمة الباقة إلى محفظة اتصالات كاش: '+num+' — لا تحول قبل ظهور رقم صحيح.';
  modal.classList.add('show');
 };
+document.getElementById('chooseFeaturedAd').onclick=()=>{document.getElementById('choiceModal').classList.remove('show');openFeaturedAdRequest();};
 document.getElementById('continueToListing').onclick=()=>{
  document.getElementById('selectedPlan').value=document.getElementById('planChoice').value;
  document.getElementById('planStep').classList.add('hidden');
@@ -256,4 +291,5 @@ document.getElementById('adminBtn').onclick=adminPanel;
 sb.auth.onAuthStateChange(()=>setTimeout(refreshAuth,0));
 (async()=>{await refreshAuth();await Promise.all([loadCloudListings(),loadFeaturedAds()]);})();
 </script>
+</div>
 </body></html>
