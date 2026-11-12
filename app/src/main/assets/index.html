@@ -43,7 +43,9 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 <footer id="appFooter">جنب بيتك — دليل الخدمات السحابي.</footer>
 <button class="fab" id="addBtn">＋ أضف نشاطك</button>
 <div class="modal" id="modal"><div class="sheet"><button class="close" id="closeBtn">إغلاق ✕</button><h2>إضافة نشاط جديد</h2>
-<form id="listingForm">
+<div id="planStep"><h3>اختار باقة الاشتراك أولًا</h3><div class="field"><label>مدة الاشتراك</label><select id="planChoice"><option value="weekly">أسبوعي — 50 جنيه / 7 أيام</option><option value="monthly">شهري — 200 جنيه / 30 يوم</option><option value="yearly">سنوي — 2000 جنيه / سنة</option></select></div><p class="smallnote">بعد اختيار الباقة هنفتح بيانات النشاط، وبعدها ترفع إيصال التحويل. النشاط يتفعل بعد مراجعة الإدارة وتأكيد الدفع.</p><button class="submit" type="button" id="continueToListing">متابعة وإدخال بيانات النشاط</button></div>
+<form id="listingForm" class="hidden">
+<input type="hidden" name="plan" id="selectedPlan" value="weekly">
 <div class="field"><label>اسم المحل أو الصنايعي *</label><input name="name" required maxlength="100"></div>
 <div class="field"><label>نوع النشاط *</label><select name="type"><option value="shop">محل</option><option value="food">أكل ومشروبات</option><option value="craft">صنايعي</option><option value="maintenance">صيانة</option><option value="delivery">توصيل</option><option value="home_service">خدمات منزلية</option></select></div>
 <div class="field"><label>القسم *</label><input name="category" required placeholder="مثال: صنايعية"></div>
@@ -51,10 +53,9 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 <div class="field"><label>رقم واتساب</label><input name="whatsapp" inputmode="tel"></div>
 <div class="field"><label>العنوان</label><input name="address"></div>
 <div class="field"><label>وصف مختصر</label><textarea name="description" maxlength="500"></textarea></div>
-<div class="field"><label>الباقة المطلوبة</label><select name="plan"><option value="weekly">أسبوعي — 50 جنيه</option><option value="monthly">شهري — 200 جنيه</option><option value="yearly">سنوي — 2000 جنيه</option></select></div>
 <div class="field"><label>صورة إيصال تحويل اتصالات كاش *</label><input name="receipt" type="file" accept="image/jpeg,image/png,image/webp" required></div>
 <div class="smallnote" id="cashNumber">رقم محفظة اتصالات كاش سيظهر هنا بعد إدخاله من إعدادات المدير.</div>
-<button class="submit" type="submit">إرسال النشاط وطلب الدفع للمراجعة</button></form></div></div>
+<button class="submit" type="submit">إرسال النشاط وطلب الدفع للمراجعة</button><button class="rowbtn" type="button" id="backToPlan" style="margin-top:8px">رجوع لاختيار الباقة</button></form></div></div>
 <div class="modal" id="adModal"><div class="sheet"><button class="close" id="adCloseBtn">إغلاق ✕</button><h2>طلب إعلان مميز</h2><form id="adForm"><div class="field"><label>عنوان الإعلان *</label><input name="title" required maxlength="100"></div><div class="field"><label>وصف الإعلان</label><textarea name="description" maxlength="500"></textarea></div><div class="field"><label>رقم الهاتف</label><input name="phone" inputmode="tel"></div><div class="field"><label>واتساب</label><input name="whatsapp" inputmode="tel"></div><div class="field"><label>المساحة المطلوبة</label><select name="slot"><option value="1">المساحة الأولى</option><option value="2">المساحة الثانية</option><option value="3">المساحة الثالثة</option></select></div><div class="field"><label>صورة أو فيديو الإعلان *</label><input name="media" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime" required></div><div class="field"><label>إيصال اتصالات كاش *</label><input name="receipt" type="file" accept="image/jpeg,image/png,image/webp" required></div><div class="smallnote" id="adCashInfo">سعر الإعلان 100 جنيه لمدة أسبوع. لا تحول قبل ظهور رقم المحفظة.</div><button class="submit" type="submit">إرسال طلب الإعلان للمراجعة</button></form></div></div>
 <script>
 const SUPABASE_URL='https://qedaojphnxwoptitfzzk.supabase.co';
@@ -141,10 +142,21 @@ document.getElementById('adForm').onsubmit=async e=>{
 };
 document.getElementById('addBtn').onclick=async()=>{
  if(!currentUser){alert('سجّل الدخول أو أنشئ حسابًا أولًا.');return;}
+ document.getElementById('planStep').classList.remove('hidden');
+ document.getElementById('listingForm').classList.add('hidden');
  const {data}=await sb.from('app_settings').select('value').eq('key','etisalat_cash_number').maybeSingle();
  const num=data?.value?.value||'لم يضف المدير رقم المحفظة بعد';
  document.getElementById('cashNumber').textContent='حوّل قيمة الباقة إلى محفظة اتصالات كاش: '+num+' — لا تحول قبل ظهور رقم صحيح.';
  modal.classList.add('show');
+};
+document.getElementById('continueToListing').onclick=()=>{
+ document.getElementById('selectedPlan').value=document.getElementById('planChoice').value;
+ document.getElementById('planStep').classList.add('hidden');
+ document.getElementById('listingForm').classList.remove('hidden');
+};
+document.getElementById('backToPlan').onclick=()=>{
+ document.getElementById('planStep').classList.remove('hidden');
+ document.getElementById('listingForm').classList.add('hidden');
 };
 document.getElementById('closeBtn').onclick=()=>modal.classList.remove('show');modal.onclick=e=>{if(e.target===modal)modal.classList.remove('show');};
 document.getElementById('listingForm').onsubmit=async e=>{
