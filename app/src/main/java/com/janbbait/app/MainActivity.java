@@ -8,6 +8,9 @@ import android.webkit.WebViewClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebResourceError;
+import android.webkit.WebChromeClient;
+import android.webkit.ValueCallback;
+import android.provider.OpenableColumns;
 import android.content.Intent;
 import android.net.Uri;
 
@@ -26,6 +29,8 @@ import java.util.concurrent.Executors;
 public class MainActivity extends Activity {
     private WebViewAssetLoader assetLoader;
     private WebView web;
+    private ValueCallback<Uri[]> filePathCallback;
+    private static final int FILE_CHOOSER_REQUEST = 4107;
     private final ExecutorService loader = Executors.newSingleThreadExecutor();
     private static final String APP_URL = "https://qedaojphnxwoptitfzzk.supabase.co/functions/v1/janb-app";
     private static final String LOCAL_APP_URL = "https://appassets.androidplatform.net/assets/index.html";
@@ -43,6 +48,24 @@ public class MainActivity extends Activity {
         assetLoader = new WebViewAssetLoader.Builder()
                 .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this))
                 .build();
+
+        web.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback,
+                    FileChooserParams fileChooserParams) {
+                if (filePathCallback != null) filePathCallback.onReceiveValue(null);
+                filePathCallback = callback;
+                try {
+                    Intent intent = fileChooserParams.createIntent();
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    startActivityForResult(intent, FILE_CHOOSER_REQUEST);
+                    return true;
+                } catch (Exception error) {
+                    filePathCallback = null;
+                    return false;
+                }
+            }
+        });
 
         web.setWebViewClient(new WebViewClient() {
             @Override
@@ -119,6 +142,26 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == FILE_CHOOSER_REQUEST) {
+            if (filePathCallback == null) return;
+            Uri[] results = null;
+            if (resultCode == RESULT_OK && data != null) {
+                Uri result = data.getData();
+                if (result != null) results = new Uri[]{result};
+                else if (data.getClipData() != null) {
+                    int count = data.getClipData().getItemCount();
+                    results = new Uri[count];
+                    for (int i = 0; i < count; i++) results[i] = data.getClipData().getItemAt(i).getUri();
+                }
+            }
+            filePathCallback.onReceiveValue(results);
+            filePathCallback = null;
+        }
+    }
+
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
@@ -140,6 +183,10 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         loader.shutdownNow();
+        if (filePathCallback != null) {
+            filePathCallback.onReceiveValue(null);
+            filePathCallback = null;
+        }
         if (web != null) web.destroy();
         super.onDestroy();
     }
