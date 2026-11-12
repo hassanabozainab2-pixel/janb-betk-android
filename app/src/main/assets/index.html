@@ -97,7 +97,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 <div class="field"><label>صورة إيصال تحويل اتصالات كاش *</label><input name="receipt" type="file" accept="image/jpeg,image/png,image/webp" required></div>
 <div class="smallnote" id="cashNumber">رقم محفظة اتصالات كاش سيظهر هنا بعد إدخاله من إعدادات المدير.</div>
 <button class="submit" type="submit">إرسال النشاط وطلب الدفع للمراجعة</button><button class="rowbtn" type="button" id="backToPlan" style="margin-top:8px">رجوع لاختيار الباقة</button></form></div></div>
-<div class="modal" id="adModal"><div class="sheet"><button class="close" id="adCloseBtn">إغلاق ✕</button><h2>طلب إعلان مميز</h2><form id="adForm"><div class="field"><label>عنوان الإعلان *</label><input name="title" required maxlength="100"></div><div class="field"><label>تفاصيل الإعلان ومميزاته أو العرض</label><textarea name="description" maxlength="500" placeholder="اكتب مميزات المنتج أو الخدمة والعرض وطرق الاستفادة..."></textarea></div><div class="field"><label>رقم الهاتف</label><input name="phone" inputmode="tel"></div><div class="field"><label>واتساب</label><input name="whatsapp" inputmode="tel"></div><div class="field"><label>المساحة المطلوبة</label><select name="slot"><option value="1">المساحة الأولى</option><option value="2">المساحة الثانية</option><option value="3">المساحة الثالثة</option></select></div><div class="field"><label>صورة أو فيديو الإعلان *</label><input name="media" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime" required></div><div class="receipt-upload"><label for="featuredReceiptInput">📸 ارفع صورة إيصال تحويل اتصالات كاش *</label><input id="featuredReceiptInput" name="receipt" type="file" accept="image/jpeg,image/png,image/webp" required><div class="receipt-help">اختار صورة سكرين شوت التحويل من موبايلك. لازم ترفع الإيصال قبل إرسال طلب الإعلان.</div></div><div class="panel"><b>تفاصيل الاشتراك والإعلان</b><div class="smallnote" id="adCashInfo">سعر الإعلان 100 جنيه لمدة أسبوع. الدفع عن طريق محفظة اتصالات كاش، مع رفع صورة الإيصال. لا تحول قبل ظهور رقم المحفظة والتأكد منه.</div></div><button class="submit" type="submit">إرسال طلب الإعلان للمراجعة</button></form></div></div>
+<div class="modal" id="adModal"><div class="sheet"><button class="close" id="adCloseBtn">إغلاق ✕</button><h2>طلب إعلان مميز</h2><form id="adForm"><div class="field"><label>عنوان الإعلان *</label><input name="title" required maxlength="100"></div><div class="field"><label>تفاصيل الإعلان ومميزاته أو العرض</label><textarea name="description" maxlength="500" placeholder="اكتب مميزات المنتج أو الخدمة والعرض وطرق الاستفادة..."></textarea></div><div class="field"><label>رقم الهاتف</label><input name="phone" inputmode="tel"></div><div class="field"><label>واتساب</label><input name="whatsapp" inputmode="tel"></div><div class="field"><label>المساحة المطلوبة</label><select name="slot"><option value="1">المساحة الأولى</option><option value="2">المساحة الثانية</option><option value="3">المساحة الثالثة</option></select></div><div class="field"><label>صورة أو فيديو الإعلان *</label><input name="media" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime" required></div><div class="receipt-upload"><label for="featuredReceiptInput">📸 ارفع صورة إيصال تحويل اتصالات كاش *</label><input id="featuredReceiptInput" name="receipt" type="file" accept="image/jpeg,image/png,image/webp" required><div class="receipt-help">اختار صورة سكرين شوت التحويل من موبايلك. لازم ترفع الإيصال قبل إرسال طلب الإعلان.</div></div><div class="panel"><b>تفاصيل الاشتراك والإعلان</b><div class="smallnote" id="adCashInfo">سعر الإعلان 100 جنيه لمدة أسبوع. الدفع عن طريق محفظة اتصالات كاش، مع رفع صورة الإيصال. لا تحول قبل ظهور رقم المحفظة والتأكد منه.</div></div><div id="adSubmitStatus" class="smallnote" role="status" aria-live="polite" style="margin-top:10px;min-height:24px"></div><button class="submit" id="sendFeaturedAdBtn" type="button">إرسال طلب الإعلان للمراجعة</button></form></div></div>
 <div class="modal" id="featuredDetailModal"><div class="sheet"><button class="close" id="featuredDetailClose">إغلاق ✕</button><div id="featuredDetailContent"></div></div></div>
 <script>
 const SUPABASE_URL='https://qedaojphnxwoptitfzzk.supabase.co';
@@ -198,21 +198,41 @@ async function openFeaturedAdRequest(){
 document.getElementById('featuredRequestBtn').onclick=openFeaturedAdRequest;
 document.getElementById('adCloseBtn').onclick=()=>document.getElementById('adModal').classList.remove('show');
 document.getElementById('adModal').onclick=e=>{if(e.target.id==='adModal')e.currentTarget.classList.remove('show');};
-document.getElementById('adForm').onsubmit=async e=>{
- e.preventDefault();if(!currentUser)return alert('سجّل الدخول أولًا.');
- const f=new FormData(e.target),media=f.get('media'),receipt=f.get('receipt');
- if(!media?.size||!receipt?.size)return alert('ارفع ملف الإعلان والإيصال.');
+async function sendFeaturedAdRequest(){
+ const form=document.getElementById('adForm'),status=document.getElementById('adSubmitStatus'),button=document.getElementById('sendFeaturedAdBtn');
+ if(button.disabled)return;
+ const f=new FormData(form),media=f.get('media'),receipt=f.get('receipt'),title=String(f.get('title')||'').trim();
+ const show=(msg,isError=false)=>{status.textContent=msg;status.style.color=isError?'#b42318':'#126b4d';};
+ if(!currentUser){show('انتهت جلسة الدخول. سجّل الدخول مرة أخرى.',true);return;}
+ if(!title){show('اكتب عنوان الإعلان أولًا.',true);form.querySelector('[name="title"]').focus();return;}
+ if(!media||!media.size){show('اختار صورة أو فيديو الإعلان أولًا.',true);return;}
+ if(!receipt||!receipt.size){show('اختار صورة إيصال التحويل أولًا.',true);return;}
+ button.disabled=true;button.textContent='جاري إرسال الطلب...';show('جاري رفع الإعلان والإيصال، من فضلك انتظر.');
+ let mediaPath=null,receiptPath=null;
  try{
-  const base=currentUser.id+'/ads/'+Date.now();
-  const mediaPath=base+'-'+media.name.replace(/[^a-zA-Z0-9._-]/g,'_');
-  const receiptPath=currentUser.id+'/receipts/ad-'+Date.now()+'-'+receipt.name.replace(/[^a-zA-Z0-9._-]/g,'_');
-  const m=await sb.storage.from('janb-media').upload(mediaPath,media,{contentType:media.type,upsert:false});if(m.error)throw m.error;
-  const rp=await sb.storage.from('janb-receipts').upload(receiptPath,receipt,{contentType:receipt.type,upsert:false});if(rp.error)throw rp.error;
-  const ad=await sb.from('featured_ads').insert({owner_id:currentUser.id,slot:Number(f.get('slot')),title:f.get('title'),description:f.get('description'),phone:f.get('phone'),whatsapp:f.get('whatsapp'),media_path:mediaPath,media_type:media.type.startsWith('video/')?'video':'image',amount_egp:100,status:'pending'}).select('id').single();if(ad.error)throw ad.error;
-  const pay=await sb.from('payment_requests').insert({owner_id:currentUser.id,featured_ad_id:ad.data.id,payment_type:'featured_ad',amount_egp:100,receipt_path:receiptPath,status:'pending'});if(pay.error)throw pay.error;
-  alert('تم إرسال طلب الإعلان والإيصال. سيظهر بعد مراجعة الإدارة وتأكيد الدفع.');e.target.reset();document.getElementById('adModal').classList.remove('show');
- }catch(err){alert('تعذر إرسال الطلب: '+(err.message||'خطأ غير معروف'));}
-};
+  const stamp=Date.now(),base=currentUser.id+'/ads/'+stamp;
+  mediaPath=base+'-'+media.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  receiptPath=currentUser.id+'/receipts/ad-'+stamp+'-'+receipt.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const m=await sb.storage.from('janb-media').upload(mediaPath,media,{contentType:media.type||'application/octet-stream',upsert:false});
+  if(m.error)throw new Error('رفع ملف الإعلان: '+m.error.message);
+  const rp=await sb.storage.from('janb-receipts').upload(receiptPath,receipt,{contentType:receipt.type||'image/jpeg',upsert:false});
+  if(rp.error)throw new Error('رفع الإيصال: '+rp.error.message);
+  const ad=await sb.from('featured_ads').insert({owner_id:currentUser.id,slot:Number(f.get('slot')),title,description:f.get('description'),phone:f.get('phone'),whatsapp:f.get('whatsapp'),media_path:mediaPath,media_type:media.type.startsWith('video/')?'video':'image',amount_egp:100,status:'pending'}).select('id').single();
+  if(ad.error)throw new Error('حفظ بيانات الإعلان: '+ad.error.message);
+  const pay=await sb.from('payment_requests').insert({owner_id:currentUser.id,featured_ad_id:ad.data.id,payment_type:'featured_ad',amount_egp:100,receipt_path:receiptPath,status:'pending'});
+  if(pay.error)throw new Error('حفظ طلب الدفع: '+pay.error.message);
+  show('تم إرسال الطلب بنجاح. هتلاقيه في لوحة المدير ← طلبات الدفع للمراجعة.',false);
+  form.reset();
+  setTimeout(()=>document.getElementById('adModal').classList.remove('show'),900);
+ }catch(err){
+  console.error('Featured ad submission failed',err);
+  show('فشل الإرسال: '+(err.message||'خطأ غير معروف')+' — لم يتم اعتماد الطلب.',true);
+ }finally{
+  button.disabled=false;button.textContent='إرسال طلب الإعلان للمراجعة';
+ }
+}
+document.getElementById('sendFeaturedAdBtn').addEventListener('click',sendFeaturedAdRequest);
+document.getElementById('adForm').addEventListener('submit',e=>{e.preventDefault();sendFeaturedAdRequest();});
 document.getElementById('addBtn').onclick=()=>{if(!currentUser)return;document.getElementById('choiceModal').classList.add('show');};
 document.getElementById('choiceCloseBtn').onclick=()=>document.getElementById('choiceModal').classList.remove('show');
 document.getElementById('choiceModal').onclick=e=>{if(e.target.id==='choiceModal')e.currentTarget.classList.remove('show');};
