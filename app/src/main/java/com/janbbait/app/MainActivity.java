@@ -7,6 +7,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebViewClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
+import android.webkit.WebResourceError;
 import android.content.Intent;
 import android.net.Uri;
 
@@ -16,7 +17,9 @@ import androidx.webkit.WebViewAssetLoader;
 public class MainActivity extends Activity {
     private WebViewAssetLoader assetLoader;
     private WebView web;
-    private static final String APP_URL = "https://appassets.androidplatform.net/assets/index.html";
+    private boolean localFallbackUsed = false;
+    private static final String APP_URL = "https://qedaojphnxwoptitfzzk.supabase.co/functions/v1/janb-app";
+    private static final String LOCAL_APP_URL = "https://appassets.androidplatform.net/assets/index.html";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +42,17 @@ public class MainActivity extends Activity {
             }
 
             @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                super.onReceivedError(view, request, error);
+                if (request.isForMainFrame()
+                        && !localFallbackUsed
+                        && request.getUrl().toString().startsWith(APP_URL)) {
+                    localFallbackUsed = true;
+                    view.loadUrl(LOCAL_APP_URL);
+                }
+            }
+
+            @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
                 String scheme = uri.getScheme();
@@ -49,9 +63,8 @@ public class MainActivity extends Activity {
                     return true;
                 }
 
-                // Open OAuth/navigation in a Custom Tab and return to this activity
-                // only when the registered janbbait://auth/callback is reached.
                 if ("https".equalsIgnoreCase(scheme)
+                        && !"qedaojphnxwoptitfzzk.supabase.co".equalsIgnoreCase(uri.getHost())
                         && !"appassets.androidplatform.net".equalsIgnoreCase(uri.getHost())) {
                     try {
                         CustomTabsIntent tabs = new CustomTabsIntent.Builder().build();
@@ -81,6 +94,7 @@ public class MainActivity extends Activity {
         if (intent == null || intent.getData() == null || web == null) return;
         Uri uri = intent.getData();
         if (!"janbbait".equals(uri.getScheme()) || !"auth".equals(uri.getHost())) return;
+        localFallbackUsed = false;
         String callbackUrl = APP_URL;
         String query = uri.getEncodedQuery();
         String fragment = uri.getEncodedFragment();
