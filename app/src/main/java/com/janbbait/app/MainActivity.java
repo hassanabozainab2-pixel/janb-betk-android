@@ -217,7 +217,12 @@ public class MainActivity extends Activity {
         }
         if ("https".equalsIgnoreCase(uri.getScheme())
                 && "hassanabozainab2-pixel.github.io".equalsIgnoreCase(uri.getHost())) {
-            loadHostedHtml(APP_URL);
+            String businessId = uri.getQueryParameter("business");
+            String targetUrl = APP_URL;
+            if (businessId != null && businessId.matches("[0-9a-fA-F-]{36}")) {
+                targetUrl += "?business=" + Uri.encode(businessId);
+            }
+            loadHostedHtml(targetUrl);
         }
     }
 
