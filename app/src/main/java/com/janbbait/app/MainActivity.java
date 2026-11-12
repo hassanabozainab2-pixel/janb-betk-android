@@ -14,11 +14,13 @@ import androidx.webkit.WebViewAssetLoader;
 
 public class MainActivity extends Activity {
     private WebViewAssetLoader assetLoader;
+    private WebView web;
+    private static final String APP_URL = "https://appassets.androidplatform.net/assets/index.html";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        WebView web = new WebView(this);
+        web = new WebView(this);
         WebSettings settings = web.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
@@ -53,6 +55,26 @@ public class MainActivity extends Activity {
             }
         });
         setContentView(web);
-        web.loadUrl("https://appassets.androidplatform.net/assets/index.html");
+        loadAuthCallback(getIntent());
+        if (getIntent() == null || getIntent().getData() == null) web.loadUrl(APP_URL);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        loadAuthCallback(intent);
+    }
+
+    private void loadAuthCallback(Intent intent) {
+        if (intent == null || intent.getData() == null || web == null) return;
+        Uri uri = intent.getData();
+        if (!"janbbait".equals(uri.getScheme()) || !"auth".equals(uri.getHost())) return;
+        String callbackUrl = APP_URL;
+        String query = uri.getEncodedQuery();
+        String fragment = uri.getEncodedFragment();
+        if (query != null && !query.isEmpty()) callbackUrl += "?" + query;
+        if (fragment != null && !fragment.isEmpty()) callbackUrl += "#" + fragment;
+        web.loadUrl(callbackUrl);
     }
 }
