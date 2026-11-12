@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#126b4d">
 <meta name="description" content="جنب بيتك — كل اللي تحتاجه حواليك">
 <title>جنب بيتك</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.min.js"></script>
 <style>
 :root{--green:#126b4d;--green2:#e8f4ee;--gold:#e2b64f;--ink:#17231e;--muted:#6b7771;--line:#e6ebe8;--bg:#f6f8f6}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif}
@@ -23,7 +24,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 </style>
 </head>
 <body>
-<header><div class="top"><div><div class="brand">جنب بيتك</div><div class="tag">كل اللي تحتاجه حواليك</div></div><div class="pill">إسنا · الأقصر</div></div><div class="search"><input id="q" placeholder="بتدور على إيه؟ محل، صنايعي، خدمة..." aria-label="بحث"><button id="searchBtn">بحث</button></div></header>
+<header><div class="top"><div><div class="brand">جنب بيتك</div><div class="tag">كل اللي تحتاجه حواليك</div></div><div class="pill" id="connectionStatus">إسنا · جاري الاتصال</div></div><div class="search"><input id="q" placeholder="بتدور على إيه؟ محل، صنايعي، خدمة..." aria-label="بحث"><button id="searchBtn">بحث</button></div></header>
 <main>
 <div class="section-head"><h2>دور على اللي محتاجه</h2><span class="muted">اختار القسم</span></div>
 <div class="categories" id="categories">
@@ -33,7 +34,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 <div class="toolbar"><button class="filter active" data-type="الكل">الكل</button><button class="filter" data-type="محل">محلات</button><button class="filter" data-type="صنايعي">صنايعية</button><button class="filter" data-type="خدمة">خدمات</button></div>
 <div class="cards" id="cards"><div class="empty">لسه مفيش بيانات منشورة. تقدر تضيف بيانات تجريبية من زر «أضف نشاطك».</div></div>
 </main>
-<footer>جنب بيتك — نسخة أولية للتجربة. البيانات محفوظة على الجهاز ده فقط.</footer>
+<footer id="appFooter">جنب بيتك — دليل الخدمات السحابي.</footer>
 <button class="fab" id="addBtn">＋ أضف نشاطك</button>
 <div class="modal" id="modal"><div class="sheet"><button class="close" id="closeBtn">إغلاق ✕</button><h2>إضافة نشاط جديد</h2>
 <form id="listingForm">
@@ -45,15 +46,25 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 <div class="field"><label>وصف مختصر</label><textarea name="description" maxlength="240" placeholder="اكتب الخدمة أو المنتجات..."></textarea></div>
 <button class="submit" type="submit">حفظ كطلب مراجعة</button></form></div></div>
 <script>
-const KEY='janb-betk-listings-v1';let selectedType='الكل',selectedCategory='';
-const read=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return []}};
-const write=x=>localStorage.setItem(KEY,JSON.stringify(x));
+const SUPABASE_URL='https://qedaojphnxwoptitfzzk.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_VyDwQNzQQN9wj8iUqu1_DQ_IN7AgxRM';
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+let cloudRows=[],selectedType='الكل',selectedCategory='';
 const cards=document.getElementById('cards');
-function render(){const q=document.getElementById('q').value.trim().toLowerCase();const rows=read().filter(x=>(selectedType==='الكل'||x.type===selectedType)&&(!selectedCategory||x.category===selectedCategory)&&[x.name,x.category,x.area,x.description].join(' ').toLowerCase().includes(q));document.getElementById('count').textContent=rows.length+' نتيجة';cards.innerHTML='';if(!rows.length){cards.innerHTML='<div class="empty">مفيش نتائج مطابقة دلوقتي. جرّب كلمة تانية أو أضف نشاط جديد.</div>';return}rows.forEach(x=>{const el=document.createElement('article');el.className='listing';const avatar=x.type==='صنايعي'?'🧰':x.type==='خدمة'?'🚚':'🏪';const phone=x.phone.replace(/[^\d+]/g,'');el.innerHTML=`<div class="avatar">${avatar}</div><div style="min-width:0;flex:1"><h3></h3><p></p><div class="muted"></div><div class="actions"><a href="tel:${phone}">اتصال</a><a href="https://wa.me/${phone.replace(/^0/,'20')}" target="_blank" rel="noopener">واتساب</a></div></div>`;el.querySelector('h3').textContent=x.name;el.querySelector('p').textContent=x.category+' · '+x.type;el.querySelector('.muted').textContent=(x.area||'إسنا')+(x.description?' — '+x.description:'');cards.appendChild(el)})}
+async function loadCloudListings(){
+ const status=document.getElementById('connectionStatus');
+ try{
+  const {data,error}=await supabaseClient.from('businesses').select('id,name,business_type,category,phone,whatsapp,address,description').eq('status','approved').order('created_at',{ascending:false});
+  if(error) throw error;
+  cloudRows=(data||[]).map(x=>({...x,type:({shop:'محل',food:'محل',craft:'صنايعي',maintenance:'صنايعي',delivery:'خدمة',home_service:'خدمة',other:'خدمة'})[x.business_type]||'خدمة',area:x.address||'إسنا'}));
+  status.textContent='متصل بالسحابة';render();
+ }catch(err){status.textContent='الاتصال غير متاح';cards.innerHTML='<div class="empty">تعذر تحميل البيانات السحابية. تحقق من الاتصال وإعدادات قاعدة البيانات.</div>';console.error(err);}
+}
+function render(){const q=document.getElementById('q').value.trim().toLowerCase();const rows=cloudRows.filter(x=>(selectedType==='الكل'||x.type===selectedType)&&(!selectedCategory||x.category===selectedCategory)&&[x.name,x.category,x.area,x.description].join(' ').toLowerCase().includes(q));document.getElementById('count').textContent=rows.length+' نتيجة';cards.innerHTML='';if(!rows.length){cards.innerHTML='<div class="empty">مفيش نتائج مطابقة دلوقتي. جرّب كلمة تانية أو أضف نشاط جديد.</div>';return}rows.forEach(x=>{const el=document.createElement('article');el.className='listing';const avatar=x.type==='صنايعي'?'🧰':x.type==='خدمة'?'🚚':'🏪';const phone=x.phone.replace(/[^\d+]/g,'');el.innerHTML=`<div class="avatar">${avatar}</div><div style="min-width:0;flex:1"><h3></h3><p></p><div class="muted"></div><div class="actions"><a href="tel:${phone}">اتصال</a><a href="https://wa.me/${phone.replace(/^0/,'20')}" target="_blank" rel="noopener">واتساب</a></div></div>`;el.querySelector('h3').textContent=x.name;el.querySelector('p').textContent=x.category+' · '+x.type;el.querySelector('.muted').textContent=(x.area||'إسنا')+(x.description?' — '+x.description:'');cards.appendChild(el)})}
 document.getElementById('searchBtn').onclick=render;document.getElementById('q').addEventListener('input',render);
 document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');selectedType=b.dataset.type;render()});
 document.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{selectedCategory=selectedCategory===b.dataset.cat?'':b.dataset.cat;document.querySelectorAll('.cat').forEach(x=>x.style.outline=x.dataset.cat===selectedCategory?'2px solid #126b4d':'none');render()});
-const modal=document.getElementById('modal');document.getElementById('addBtn').onclick=()=>modal.classList.add('show');document.getElementById('closeBtn').onclick=()=>modal.classList.remove('show');modal.onclick=e=>{if(e.target===modal)modal.classList.remove('show')};
-document.getElementById('listingForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);const x=Object.fromEntries(f.entries());x.id=crypto.randomUUID?crypto.randomUUID():String(Date.now());x.status='pending';x.createdAt=new Date().toISOString();const rows=read();rows.unshift(x);write(rows);e.target.reset();modal.classList.remove('show');alert('تم حفظ الطلب على هذا الجهاز كطلب مراجعة.');render()};render();
+const modal=document.getElementById('modal');document.getElementById('addBtn').onclick=()=>alert('إضافة النشاط ستتاح بعد استكمال تسجيل دخول أصحاب الأنشطة ونظام الاشتراك.');document.getElementById('closeBtn').onclick=()=>modal.classList.remove('show');modal.onclick=e=>{if(e.target===modal)modal.classList.remove('show')};
+document.getElementById('listingForm').onsubmit=e=>{e.preventDefault();alert('لم يتم إرسال الطلب. تسجيل الدخول مطلوب لحفظ النشاط في قاعدة البيانات.');};loadCloudListings();
 </script>
 </body></html>
