@@ -108,10 +108,10 @@ const cards=document.getElementById('cards'),modal=document.getElementById('moda
 const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function showFeaturedDetails(x){
  const box=document.getElementById('featuredDetailContent');
- const url=sb.storage.from('janb-media').getPublicUrl(x.media_path).data.publicUrl;
+ const url=x.demo_image||sb.storage.from('janb-media').getPublicUrl(x.media_path).data.publicUrl;
  const wa=(x.whatsapp||x.phone||'').replace(/\D/g,'').replace(/^0/,'20');
  const media=x.media_type==='video'?'<video controls playsinline style="width:100%;max-height:300px;border-radius:14px" src="'+esc(url)+'"></video>':'<img style="width:100%;max-height:300px;object-fit:contain;border-radius:14px;background:#f4f4f4" src="'+esc(url)+'" alt="'+esc(x.title)+'">';
- box.innerHTML=media+'<div class="ad-slot" style="margin-top:12px">إعلان مميز · المساحة '+esc(x.slot)+'</div><h2>'+esc(x.title)+'</h2><p class="smallnote">'+esc(x.description||'لا توجد تفاصيل إضافية.')+'</p><div class="smallnote">للاستفسار والتواصل مع صاحب الإعلان:</div><div class="actions" style="margin-top:10px">'+(x.phone?'<a href="tel:'+esc(x.phone)+'">اتصال</a>':'')+(wa?'<a target="_blank" rel="noopener" href="https://wa.me/'+esc(wa)+'">واتساب</a>':'')+'</div>';
+ box.innerHTML=media+'<div class="ad-slot" style="margin-top:12px">'+(x.is_demo?'عرض تجريبي':'إعلان مميز · المساحة '+esc(x.slot))+'</div><h2>'+esc(x.title)+'</h2><p class="smallnote">'+esc(x.description||'لا توجد تفاصيل إضافية.')+'</p><div class="smallnote">للاستفسار والتواصل مع صاحب الإعلان:</div><div class="actions" style="margin-top:10px">'+(x.phone?'<a href="tel:'+esc(x.phone)+'">اتصال</a>':'')+(wa?'<a target="_blank" rel="noopener" href="https://wa.me/'+esc(wa)+'">واتساب</a>':'')+'</div>';
  document.getElementById('featuredDetailModal').classList.add('show');
 }
 document.getElementById('featuredDetailClose').onclick=()=>document.getElementById('featuredDetailModal').classList.remove('show');
@@ -133,7 +133,7 @@ async function loadFeaturedAds(){
    if(!x){
     const demo=demoAds[slot-1];
     el.innerHTML='<img loading="lazy" src="'+demo.image+'" alt="صورة توضيحية لنشاط '+esc(demo.title)+'"><div style="min-width:0;flex:1"><div class="ad-slot">عرض تجريبي · المساحة '+slot+'</div><h3>'+esc(demo.title)+'</h3><div class="muted">'+esc(demo.description)+'</div><div class="smallnote">نموذج للعرض الجمالي فقط — ليس إعلانًا حقيقيًا</div></div>';
-    box.appendChild(el);continue;
+    const demoItem={...demo,slot,is_demo:true,demo_image:demo.image};el.onclick=()=>showFeaturedDetails(demoItem);el.setAttribute('role','button');el.setAttribute('tabindex','0');el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showFeaturedDetails(demoItem);}};box.appendChild(el);continue;
    }
    const url=sb.storage.from('janb-media').getPublicUrl(x.media_path).data.publicUrl;
    const media=x.media_type==='video'?'<video controls playsinline src="'+esc(url)+'"></video>':'<img loading="lazy" src="'+esc(url)+'" alt="">';
@@ -146,7 +146,7 @@ async function loadFeaturedAds(){
   demoAds.forEach(demo=>{
    const el=document.createElement('article');el.className='ad-card';
    el.innerHTML='<img loading="lazy" src="'+demo.image+'" alt="صورة توضيحية لنشاط '+esc(demo.title)+'"><div style="min-width:0;flex:1"><div class="ad-slot">عرض تجريبي · المساحة '+demo.slot+'</div><h3>'+esc(demo.title)+'</h3><div class="muted">'+esc(demo.description)+'</div><div class="smallnote">نموذج للعرض الجمالي فقط — ليس إعلانًا حقيقيًا</div></div>';
-   box.appendChild(el);
+   const demoItem={...demo,is_demo:true,demo_image:demo.image};el.onclick=()=>showFeaturedDetails(demoItem);el.setAttribute('role','button');el.setAttribute('tabindex','0');el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showFeaturedDetails(demoItem);}};box.appendChild(el);
   });
   console.error(e);
  }
