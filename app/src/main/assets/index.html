@@ -29,7 +29,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 <body>
 <header><div class="top"><div><div class="brand">جنب بيتك</div><div class="tag">كل اللي تحتاجه حواليك</div></div><div class="pill" id="connectionStatus">إسنا · جاري الاتصال</div></div><div class="search"><input id="q" placeholder="بتدور على إيه؟ محل، صنايعي، خدمة..." aria-label="بحث"><button id="searchBtn">بحث</button></div></header>
 <main>
-<div class="panel" id="accountPanel"><h3>حسابك</h3><div id="accountState" class="smallnote">سجّل الدخول لإضافة نشاطك ومتابعة طلباتك.</div><div class="rowbtn"><button id="loginBtn">دخول / إنشاء حساب</button><button id="logoutBtn" class="hidden">تسجيل خروج</button><button id="adminBtn" class="hidden">لوحة المدير</button></div></div>
+<div class="panel" id="accountPanel"><h3>حسابك</h3><div id="accountState" class="smallnote">سجّل الدخول لإضافة نشاطك ومتابعة طلباتك.</div><div class="rowbtn"><button id="loginBtn">دخول / إنشاء حساب</button><button id="logoutBtn" class="hidden">تسجيل خروج</button><button id="adminBtn" class="hidden">لوحة المدير</button><button id="adRequestBtn" class="hidden">اطلب إعلانًا مميزًا</button></div></div>
 <div id="adminPanel" class="panel hidden"><h3>لوحة المدير — طلبات الدفع</h3><div id="adminPayments" class="smallnote">لا توجد طلبات محملة.</div></div>
 <section id="featuredSection"><div class="section-head"><h2>إعلانات مميزة</h2><span class="muted">مساحات إعلانية</span></div><div id="featuredAds" class="cards"><div class="empty">جاري تحميل الإعلانات...</div></div></section>
 <div class="section-head"><h2>دور على اللي محتاجه</h2><span class="muted">اختار القسم</span></div>
@@ -55,6 +55,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 <div class="field"><label>صورة إيصال تحويل اتصالات كاش *</label><input name="receipt" type="file" accept="image/jpeg,image/png,image/webp" required></div>
 <div class="smallnote" id="cashNumber">رقم محفظة اتصالات كاش سيظهر هنا بعد إدخاله من إعدادات المدير.</div>
 <button class="submit" type="submit">إرسال النشاط وطلب الدفع للمراجعة</button></form></div></div>
+<div class="modal" id="adModal"><div class="sheet"><button class="close" id="adCloseBtn">إغلاق ✕</button><h2>طلب إعلان مميز</h2><form id="adForm"><div class="field"><label>عنوان الإعلان *</label><input name="title" required maxlength="100"></div><div class="field"><label>وصف الإعلان</label><textarea name="description" maxlength="500"></textarea></div><div class="field"><label>رقم الهاتف</label><input name="phone" inputmode="tel"></div><div class="field"><label>واتساب</label><input name="whatsapp" inputmode="tel"></div><div class="field"><label>المساحة المطلوبة</label><select name="slot"><option value="1">المساحة الأولى</option><option value="2">المساحة الثانية</option><option value="3">المساحة الثالثة</option></select></div><div class="field"><label>صورة أو فيديو الإعلان *</label><input name="media" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime" required></div><div class="field"><label>إيصال اتصالات كاش *</label><input name="receipt" type="file" accept="image/jpeg,image/png,image/webp" required></div><div class="smallnote" id="adCashInfo">سعر الإعلان 100 جنيه لمدة أسبوع. لا تحول قبل ظهور رقم المحفظة.</div><button class="submit" type="submit">إرسال طلب الإعلان للمراجعة</button></form></div></div>
 <script>
 const SUPABASE_URL='https://qedaojphnxwoptitfzzk.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_VyDwQNzQQN9wj8iUqu1_DQ_IN7AgxRM';
@@ -103,7 +104,7 @@ async function refreshAuth(){
  document.getElementById('accountState').textContent=currentUser?'تم تسجيل الدخول: '+currentUser.email:'سجّل الدخول لإضافة نشاطك ومتابعة طلباتك.';
  document.getElementById('logoutBtn').classList.toggle('hidden',!currentUser);
  document.getElementById('loginBtn').classList.toggle('hidden',!!currentUser);
- document.getElementById('adminBtn').classList.toggle('hidden',currentUser?.app_metadata?.role!=='admin');
+ document.getElementById('adminBtn').classList.toggle('hidden',currentUser?.app_metadata?.role!=='admin');document.getElementById('adRequestBtn').classList.toggle('hidden',!currentUser);
 }
 document.getElementById('loginBtn').onclick=async()=>{
  const email=prompt('اكتب بريدك الإلكتروني');if(!email)return;
@@ -116,6 +117,28 @@ document.getElementById('loginBtn').onclick=async()=>{
  await refreshAuth();
 };
 document.getElementById('logoutBtn').onclick=async()=>{await sb.auth.signOut();await refreshAuth();};
+document.getElementById('adRequestBtn').onclick=async()=>{
+ const {data}=await sb.from('app_settings').select('value').eq('key','etisalat_cash_number').maybeSingle();
+ document.getElementById('adCashInfo').textContent='سعر الإعلان 100 جنيه لمدة أسبوع. محفظة اتصالات كاش: '+(data?.value?.value||'لم يحدد المدير الرقم بعد')+'. لا تحول قبل التأكد من الرقم.';
+ document.getElementById('adModal').classList.add('show');
+};
+document.getElementById('adCloseBtn').onclick=()=>document.getElementById('adModal').classList.remove('show');
+document.getElementById('adModal').onclick=e=>{if(e.target.id==='adModal')e.currentTarget.classList.remove('show');};
+document.getElementById('adForm').onsubmit=async e=>{
+ e.preventDefault();if(!currentUser)return alert('سجّل الدخول أولًا.');
+ const f=new FormData(e.target),media=f.get('media'),receipt=f.get('receipt');
+ if(!media?.size||!receipt?.size)return alert('ارفع ملف الإعلان والإيصال.');
+ try{
+  const base=currentUser.id+'/ads/'+Date.now();
+  const mediaPath=base+'-'+media.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const receiptPath=currentUser.id+'/receipts/ad-'+Date.now()+'-'+receipt.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const m=await sb.storage.from('janb-media').upload(mediaPath,media,{contentType:media.type,upsert:false});if(m.error)throw m.error;
+  const rp=await sb.storage.from('janb-media').upload(receiptPath,receipt,{contentType:receipt.type,upsert:false});if(rp.error)throw rp.error;
+  const ad=await sb.from('featured_ads').insert({owner_id:currentUser.id,slot:Number(f.get('slot')),title:f.get('title'),description:f.get('description'),phone:f.get('phone'),whatsapp:f.get('whatsapp'),media_path:mediaPath,media_type:media.type.startsWith('video/')?'video':'image',amount_egp:100,status:'pending'}).select('id').single();if(ad.error)throw ad.error;
+  const pay=await sb.from('payment_requests').insert({owner_id:currentUser.id,featured_ad_id:ad.data.id,payment_type:'featured_ad',amount_egp:100,receipt_path:receiptPath,status:'pending'});if(pay.error)throw pay.error;
+  alert('تم إرسال طلب الإعلان والإيصال. سيظهر بعد مراجعة الإدارة وتأكيد الدفع.');e.target.reset();document.getElementById('adModal').classList.remove('show');
+ }catch(err){alert('تعذر إرسال الطلب: '+(err.message||'خطأ غير معروف'));}
+};
 document.getElementById('addBtn').onclick=async()=>{
  if(!currentUser){alert('سجّل الدخول أو أنشئ حسابًا أولًا.');return;}
  const {data}=await sb.from('app_settings').select('value').eq('key','etisalat_cash_number').maybeSingle();
@@ -162,22 +185,29 @@ async function adminPanel(){
 }
 async function approvePayment(p){
  if(!confirm('تأكدت بنفسك من وصول المبلغ للمحفظة؟'))return;
- const now=new Date(),planRow=await sb.from('subscriptions').select('plan').eq('id',p.subscription_id).single();
- if(planRow.error){alert(planRow.error.message);return;}
- const plan=planRow.data.plan,days=plan==='weekly'?7:plan==='monthly'?30:365;
- const end=new Date(now.getTime()+days*86400000);
- const sub=await sb.from('subscriptions').update({status:'active',starts_at:now.toISOString(),ends_at:end.toISOString()}).eq('id',p.subscription_id);
- if(sub.error){alert(sub.error.message);return;}
- const bus=await sb.from('businesses').update({status:'approved'}).eq('id',p.business_id);
- if(bus.error){alert(bus.error.message);return;}
+ const now=new Date();
+ if(p.payment_type==='featured_ad'){
+  const end=new Date(now.getTime()+7*86400000);
+  const ad=await sb.from('featured_ads').update({status:'active',starts_at:now.toISOString(),ends_at:end.toISOString()}).eq('id',p.featured_ad_id);
+  if(ad.error){alert(ad.error.message);return;}
+ }else{
+  const planRow=await sb.from('subscriptions').select('plan').eq('id',p.subscription_id).single();
+  if(planRow.error){alert(planRow.error.message);return;}
+  const plan=planRow.data.plan,days=plan==='weekly'?7:plan==='monthly'?30:365;
+  const end=new Date(now.getTime()+days*86400000);
+  const sub=await sb.from('subscriptions').update({status:'active',starts_at:now.toISOString(),ends_at:end.toISOString()}).eq('id',p.subscription_id);
+  if(sub.error){alert(sub.error.message);return;}
+  const bus=await sb.from('businesses').update({status:'approved'}).eq('id',p.business_id);
+  if(bus.error){alert(bus.error.message);return;}
+ }
  const pay=await sb.from('payment_requests').update({status:'approved',reviewed_at:now.toISOString()}).eq('id',p.id);
  if(pay.error){alert(pay.error.message);return;}
- alert('تم تفعيل النشاط بعد تأكيد الدفع.');await adminPanel();await loadCloudListings();
+ alert('تم اعتماد الطلب بعد تأكيد الدفع.');await adminPanel();await loadCloudListings();await loadFeaturedAds();
 }
 async function rejectPayment(p){
  const pay=await sb.from('payment_requests').update({status:'rejected',reviewed_at:new Date().toISOString()}).eq('id',p.id);
  if(pay.error){alert(pay.error.message);return;}
- if(p.business_id)await sb.from('businesses').update({status:'rejected'}).eq('id',p.business_id);
+ if(p.business_id)await sb.from('businesses').update({status:'rejected'}).eq('id',p.business_id);if(p.featured_ad_id)await sb.from('featured_ads').update({status:'rejected'}).eq('id',p.featured_ad_id);
  alert('تم رفض الطلب.');await adminPanel();
 }
 document.getElementById('adminBtn').onclick=adminPanel;
