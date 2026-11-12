@@ -189,8 +189,8 @@ async function openBusinessDetail(id){
    };
    let items=(products||[]).map(p=>({name:p.name,description:p.description||'',price:p.price,unit:p.unit||'',image_path:p.image_path||'',image:imageFor(p.name)}));
    if(!items.length){
-    const lines=String(x.description||'').split(/\\r?\\n/).map(v=>v.trim()).filter(v=>v.includes(':'));
-    items=lines.map(line=>{const at=line.lastIndexOf(':');const left=line.slice(0,at).trim();const name=left.replace(/\\s*[-–]\\s*[^-–]+$/,'').trim()||left;return {name,description:left===name?'':left.slice(name.length).trim(),price:line.slice(at+1).trim(),unit:'',image_path:'',image:imageFor(name)};});
+    const lines=String(x.description||'').split('\n').map(v=>v.trim()).filter(v=>v.includes(':'));
+    items=lines.map(line=>{const at=line.lastIndexOf(':');const left=line.slice(0,at).trim();const name=left.includes(' - ')?left.slice(0,left.lastIndexOf(' - ')).trim():left;return {name,description:left===name?'':left.slice(name.length).trim(),price:line.slice(at+1).trim(),unit:'',image_path:'',image:imageFor(name)};});
    }
    productCards=items.length?'<div class="app-product-grid">'+items.map(p=>{
     const img=p.image_path?sb.storage.from('business-products').getPublicUrl(p.image_path).data.publicUrl:p.image;
