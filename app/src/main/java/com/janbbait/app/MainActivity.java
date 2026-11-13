@@ -79,6 +79,14 @@ public class MainActivity extends Activity {
                 Uri uri = request.getUrl();
                 String scheme = uri.getScheme();
 
+                // Route Supabase OAuth deep links back into this Activity.
+                // WebView does not dispatch custom schemes to Android intent filters by itself.
+                if ("janbbait".equalsIgnoreCase(scheme)
+                        && "auth".equalsIgnoreCase(uri.getHost())) {
+                    handleIncomingLink(new Intent(Intent.ACTION_VIEW, uri));
+                    return true;
+                }
+
                 if (scheme != null && (scheme.equals("tel") || scheme.equals("mailto"))) {
                     try { startActivity(new Intent(Intent.ACTION_VIEW, uri)); }
                     catch (Exception ignored) {}
