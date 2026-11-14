@@ -274,16 +274,22 @@ public class MainActivity extends Activity {
     private void loadAuthCallback(Intent intent) {
         if (intent == null || intent.getData() == null || web == null) return;
         Uri uri = intent.getData();
-        if (!"janbbait".equals(uri.getScheme()) || !"auth".equals(uri.getHost())) return;
-        String callbackUrl = "";
+        if (!"janbbait".equalsIgnoreCase(uri.getScheme())
+                || !"auth".equalsIgnoreCase(uri.getHost())
+                || !"/callback".equals(uri.getPath())) return;
+
+        // Preserve the complete OAuth callback URL, including its query and
+        // fragment. Fetching the HTML separately with HttpURLConnection can
+        // lose the fragment (#access_token=...) before Supabase JS sees it.
+        String hostedUrl = APP_URL + "?app=1";
         String query = uri.getEncodedQuery();
         String fragment = uri.getEncodedFragment();
-        if (query != null && !query.isEmpty()) callbackUrl += "?" + query;
-        if (fragment != null && !fragment.isEmpty()) callbackUrl += "#" + fragment;
-        String hostedUrl = APP_URL + "?app=1";
         if (query != null && !query.isEmpty()) hostedUrl += "&" + query;
         if (fragment != null && !fragment.isEmpty()) hostedUrl += "#" + fragment;
-        loadHostedHtml(hostedUrl, callbackUrl);
+
+        // Let WebView navigate to the callback URL itself so Supabase JS can
+        // detect the OAuth code/tokens in window.location and restore the session.
+        web.loadUrl(hostedUrl);
     }
 
     @Override
