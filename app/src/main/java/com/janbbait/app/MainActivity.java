@@ -87,6 +87,30 @@ public class MainActivity extends Activity {
                     return true;
                 }
 
+                // Facebook blocks OAuth inside embedded WebViews. Open Supabase's
+                // authorization endpoint in a system browser tab so the provider
+                // can authenticate and return through the janbbait:// callback.
+                if ("https".equalsIgnoreCase(scheme)
+                        && "qedaojphnxwoptitfzzk.supabase.co".equalsIgnoreCase(uri.getHost())
+                        && uri.getPath() != null
+                        && uri.getPath().startsWith("/auth/v1/authorize")) {
+                    try {
+                        CustomTabsIntent tabs = new CustomTabsIntent.Builder().build();
+                        tabs.launchUrl(MainActivity.this, uri);
+                    } catch (Exception customTabError) {
+                        try {
+                            startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                        } catch (Exception ignored) {
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setTitle("تعذر فتح تسجيل الدخول")
+                                    .setMessage("لم نتمكن من فتح صفحة تسجيل الدخول. تأكد من وجود متصفح على الهاتف ثم حاول مرة أخرى.")
+                                    .setPositiveButton("حسنًا", null)
+                                    .show();
+                        }
+                    }
+                    return true;
+                }
+
                 if (scheme != null && (scheme.equals("tel") || scheme.equals("mailto"))) {
                     try { startActivity(new Intent(Intent.ACTION_VIEW, uri)); }
                     catch (Exception ignored) {}
