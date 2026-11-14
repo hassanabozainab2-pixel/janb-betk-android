@@ -80,19 +80,9 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
 </style>
 </head>
 <body>
-<section id="loginGate" class="login-gate">
- <div class="login-content">
-  <div class="login-logo"><div class="login-mark"><div class="login-roof"></div><div class="login-house"></div><div class="login-window"></div><div class="login-cart">🛒</div></div><div class="login-logo-name">جنب <span>بيتك</span></div></div>
-  <div class="login-slogan">كل اللي تحتاجه حواليك</div>
-  <p class="login-sub">محلات ومنتجات وخدمات قريبة منك… في مكان واحد</p>
-  <div class="login-scene"><div class="login-sun"></div><div class="login-shop one"></div><div class="login-shop two"></div><div class="login-shop three"></div></div>
-  <button id="mainFbLoginBtn" class="facebook-main" type="button">f　 تسجيل الدخول باستخدام فيسبوك</button>
-  <div class="login-benefits"><span><b>📍</b>خدمات بالقرب منك</span><span><b>🔒</b>حسابك بأمان</span><span><b>🤝</b>تجربة سهلة</span></div>
- </div>
- <div class="login-foot">أهلاً بك في جنب بيتك</div>
-</section>
-<div id="appShell" class="hidden">
-<header><div class="top"><div class="brand-area"><div><div class="brand">جنب بيتك</div><div class="tag">كل اللي تحتاجه حواليك</div></div><div class="account-menu"><button class="account-toggle" id="accountToggle" type="button">حسابك ▾</button><div class="account-dropdown hidden" id="accountDropdown"><div id="accountState" class="smallnote">سجّل الدخول لإضافة نشاطك ومتابعة طلباتك.</div><div class="rowbtn"><button id="logoutBtn" class="hidden">تسجيل خروج</button><button id="ownerProductsBtn" class="hidden">🛍️ إدارة منتجات محلك</button><button id="adminBtn" class="hidden">لوحة المدير</button><button id="reviewRequestsBtn" class="hidden">📋 مراجعة الطلبات</button></div></div></div></div><div class="pill" id="connectionStatus">إسنا · جاري الاتصال</div></div><div class="refresh-row"><button id="refreshAppBtn" class="refresh-btn" type="button">↻ تحديث التطبيق</button><span id="refreshStatus" class="refresh-status">تحديث الإعلانات والأنشطة الجديدة</span></div><div class="search"><input id="q" placeholder="بتدور على إيه؟ محل، صنايعي، خدمة..." aria-label="بحث"><button id="searchBtn">بحث</button></div></header>
+<section id="loginGate" class="login-gate hidden" aria-hidden="true"></section>
+<div id="appShell">
+<header><div class="top"><div class="brand-area"><div><div class="brand">جنب بيتك</div><div class="tag">كل اللي تحتاجه حواليك</div></div><div class="account-menu"><button class="account-toggle" id="accountToggle" type="button">حسابك ▾</button><div class="account-dropdown hidden" id="accountDropdown"><div id="accountState" class="smallnote">تصفح التطبيق متاح للجميع. أصحاب الأنشطة يمكنهم الدخول بفيسبوك لإدارة محلاتهم.</div><div class="rowbtn"><button id="ownerFacebookLoginBtn" class="social-login facebook-login" type="button">f　 دخول أصحاب الأنشطة بفيسبوك</button><button id="logoutBtn" class="hidden">تسجيل خروج</button><button id="ownerProductsBtn" class="hidden">🛍️ إدارة منتجات محلك</button><button id="adminBtn" class="hidden">لوحة المدير</button><button id="reviewRequestsBtn" class="hidden">📋 مراجعة الطلبات</button></div></div></div></div><div class="pill" id="connectionStatus">إسنا · جاري الاتصال</div></div><div class="refresh-row"><button id="refreshAppBtn" class="refresh-btn" type="button">↻ تحديث التطبيق</button><span id="refreshStatus" class="refresh-status">تحديث الإعلانات والأنشطة الجديدة</span></div><div class="search"><input id="q" placeholder="بتدور على إيه؟ محل، صنايعي، خدمة..." aria-label="بحث"><button id="searchBtn">بحث</button></div></header>
 <main>
 <div id="productSearchResults" class="panel hidden product-search-panel"></div>
 <div id="requestReviewHub" class="panel hidden admin-dashboard"><h2>📋 مراجعة الطلبات</h2><p class="smallnote">اختار نوع الطلب اللي عايز تراجعه.</p><div class="admin-grid"><button type="button" class="request-kind" data-kind="subscription">🏪 طلبات إضافة الأنشطة <b id="businessRequestCount">…</b></button><button type="button" class="request-kind" data-kind="featured_ad">⭐ طلبات الإعلانات المميزة <b id="adRequestCount">…</b></button></div><div class="rowbtn"><button type="button" id="showAllRequests">عرض كل الطلبات</button></div><div id="requestCategoryResults" class="smallnote"></div></div>
@@ -478,11 +468,14 @@ document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySel
 document.querySelectorAll('.cat').forEach(b=>b.onclick=()=>openCategory(b.dataset.cat));
 async function refreshAuth(){
  const {data}=await sb.auth.getSession();currentUser=data.session?.user||null;
- document.getElementById('loginGate').classList.toggle('hidden',!!currentUser);
- document.getElementById('appShell').classList.toggle('hidden',!currentUser);
- document.getElementById('accountState').textContent=currentUser?'تم تسجيل الدخول: '+currentUser.email:'سجّل الدخول لإضافة نشاطك ومتابعة طلباتك.';
+ // Public browsing is always available; authentication is only for business owners/admins.
+ document.getElementById('loginGate').classList.add('hidden');
+ document.getElementById('appShell').classList.remove('hidden');
+ document.getElementById('accountState').textContent=currentUser
+  ?'تم تسجيل الدخول: '+(currentUser.email||'حساب صاحب النشاط')
+  :'التصفح متاح للجميع. أصحاب الأنشطة يدخلون بفيسبوك لإدارة محلاتهم.';
+ document.getElementById('ownerFacebookLoginBtn').classList.toggle('hidden',!!currentUser);
  document.getElementById('logoutBtn').classList.toggle('hidden',!currentUser);
- 
  document.getElementById('adminBtn').classList.toggle('hidden',currentUser?.app_metadata?.role!=='admin');
  document.getElementById('reviewRequestsBtn').classList.toggle('hidden',currentUser?.app_metadata?.role!=='admin');
  await loadOwnerBusinesses();
@@ -496,7 +489,7 @@ async function signInWithSocialProvider(provider){
   if(error)alert('تعذر بدء تسجيل الدخول: '+error.message);
  }catch(e){alert('حصل خطأ أثناء فتح تسجيل الدخول: '+e.message);}
 }
-document.getElementById('mainFbLoginBtn').onclick=()=>signInWithSocialProvider('facebook');
+document.getElementById('ownerFacebookLoginBtn').onclick=()=>signInWithSocialProvider('facebook');
 document.getElementById('logoutBtn').onclick=async()=>{await sb.auth.signOut();await refreshAuth();};
 document.getElementById('ownerProductsBtn').onclick=openOwnerProducts;
 document.getElementById('ownerProductBusiness').onchange=loadOwnerProducts;
