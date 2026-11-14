@@ -137,38 +137,15 @@ public class MainActivity extends Activity {
     }
 
     private void loadHostedHtml(String targetUrl, String fallbackSuffix) {
-        loader.execute(() -> {
-            HttpURLConnection connection = null;
-            try {
-                connection = (HttpURLConnection) new URL(targetUrl).openConnection();
-                connection.setRequestMethod("GET");
-                connection.setConnectTimeout(20000);
-                connection.setReadTimeout(25000);
-                connection.setRequestProperty("Accept", "text/html");
-                connection.setRequestProperty("Cache-Control", "no-cache");
-                int status = connection.getResponseCode();
-                if (status < 200 || status >= 300) {
-                    throw new IllegalStateException("HTTP " + status);
-                }
-                StringBuilder html = new StringBuilder();
-                try (InputStream input = connection.getInputStream();
-                     BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
-                    String line;
-                    while ((line = reader.readLine()) != null) html.append(line).append('\n');
-                }
-                String page = html.toString();
-                if (!page.trim().toLowerCase().startsWith("<!doctype html")
-                        && !page.trim().toLowerCase().startsWith("<html")) {
-                    throw new IllegalStateException("The server did not return an HTML document");
-                }
-                web.post(() -> web.loadDataWithBaseURL(
-                        targetUrl, page, "text/html", "UTF-8", null));
-            } catch (Exception error) {
-                web.post(() -> web.loadUrl(LOCAL_APP_URL + (fallbackSuffix == null ? "" : fallbackSuffix)));
-            } finally {
-                if (connection != null) connection.disconnect();
-            }
-        });
+        // Load the app from its real HTTPS origin. The previous implementation
+        // downloaded HTML with HttpURLConnection and injected it using
+        // loadDataWithBaseURL; that can create an opaque WebView origin and
+        // break Supabase PKCE verifier storage when Facebook returns the code.
+        // A real navigation keeps localStorage and the OAuth callback on the
+        // exact same origin across the external Custom Tab round-trip.
+        if (web != null) {
+            web.loadUrl(targetUrl);
+        }
     }
 
     @Override
