@@ -33,8 +33,8 @@ public class MainActivity extends Activity {
     private ValueCallback<Uri[]> filePathCallback;
     private static final int FILE_CHOOSER_REQUEST = 4107;
     private final ExecutorService loader = Executors.newSingleThreadExecutor();
-    private static final String APP_URL = "https://qedaojphnxwoptitfzzk.supabase.co/functions/v1/janb-app";
-    private static final String LOCAL_APP_URL = "https://appassets.androidplatform.net/assets/index.html";
+    private static final String CLOUD_APP_URL = "https://qedaojphnxwoptitfzzk.supabase.co/functions/v1/janb-app";
+    private static final String LOCAL_CLOUD_APP_URL = "https://appassets.androidplatform.net/assets/index.html";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +43,9 @@ public class MainActivity extends Activity {
         WebSettings settings = web.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
+        // Always request the live Supabase-hosted app; do not reuse a stale WebView page cache.
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        web.clearCache(true);
         settings.setAllowFileAccess(false);
         settings.setAllowContentAccess(true);
 
@@ -253,12 +256,12 @@ public class MainActivity extends Activity {
 
     private void loadLocalApp(String suffix) {
         if (web == null) return;
-        web.loadUrl(LOCAL_APP_URL + (suffix == null ? "" : suffix));
+        web.loadUrl(LOCAL_CLOUD_APP_URL + (suffix == null ? "" : suffix));
     }
 
     private void handleIncomingLink(Intent intent) {
         if (intent == null || intent.getData() == null) {
-            loadHostedHtml(APP_URL + "?app=1", "");
+            loadHostedHtml(CLOUD_APP_URL + "?app=1&release=3", "");
             return;
         }
         Uri uri = intent.getData();
@@ -274,10 +277,10 @@ public class MainActivity extends Activity {
                 suffix = "?business=" + Uri.encode(businessId);
             }
             String hostedSuffix = suffix.isEmpty() ? "" : "&" + suffix.substring(1);
-            loadHostedHtml(APP_URL + "?app=1" + hostedSuffix, suffix);
+            loadHostedHtml(CLOUD_APP_URL + "?app=1&release=3" + hostedSuffix, suffix);
             return;
         }
-        loadHostedHtml(APP_URL + "?app=1", "");
+        loadHostedHtml(CLOUD_APP_URL + "?app=1", "");
     }
 
     private void loadAuthCallback(Intent intent) {
@@ -290,7 +293,7 @@ public class MainActivity extends Activity {
         // Preserve the complete OAuth callback URL, including its query and
         // fragment. Fetching the HTML separately with HttpURLConnection can
         // lose the fragment (#access_token=...) before Supabase JS sees it.
-        String hostedUrl = APP_URL + "?app=1";
+        String hostedUrl = CLOUD_APP_URL + "?app=1&release=3";
         String query = uri.getEncodedQuery();
         String fragment = uri.getEncodedFragment();
         if (query != null && !query.isEmpty()) hostedUrl += "&" + query;
