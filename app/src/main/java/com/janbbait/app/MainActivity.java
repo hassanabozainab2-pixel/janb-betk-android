@@ -71,7 +71,39 @@ public class MainActivity extends Activity {
         web.setWebViewClient(new WebViewClient() {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-                return assetLoader.shouldInterceptRequest(request.getUrl());
+                Uri uri = request.getUrl();
+                if ("qedaojphnxwoptitfzzk.supabase.co".equalsIgnoreCase(uri.getHost())
+                        && "/functions/v1/janb-app".equals(uri.getPath())) {
+                    try {
+                        HttpURLConnection connection = (HttpURLConnection)
+                                new URL(uri.toString()).openConnection();
+                        connection.setRequestMethod("GET");
+                        connection.setConnectTimeout(20000);
+                        connection.setReadTimeout(25000);
+                        connection.setInstanceFollowRedirects(true);
+                        connection.setRequestProperty("Accept", "text/html");
+                        connection.setRequestProperty("Cache-Control", "no-cache");
+                        int status = connection.getResponseCode();
+                        InputStream body = status >= 400
+                                ? connection.getErrorStream() : connection.getInputStream();
+                        java.util.Map<String, String> headers = new java.util.HashMap<>();
+                        headers.put("Cache-Control", "no-store");
+                        headers.put("Access-Control-Allow-Origin", "*");
+                        String reason = connection.getResponseMessage();
+                        if (reason == null || reason.isEmpty()) reason = "OK";
+                        // Force the document MIME type while keeping the requested HTTPS URL
+                        // as the WebView document origin for Supabase auth/local storage.
+                        return new WebResourceResponse("text/html", "UTF-8",
+                                status, reason, headers, body);
+                    } catch (Exception error) {
+                        String message = "<!doctype html><html lang='ar' dir='rtl'><meta charset='utf-8'><body style='font-family:Tahoma;padding:24px;text-align:center'>تعذر تحميل التطبيق. تحقق من الإنترنت ثم أعد المحاولة.</body></html>";
+                        return new WebResourceResponse("text/html", "UTF-8",
+                                503, "Service Unavailable",
+                                java.util.Collections.singletonMap("Cache-Control", "no-store"),
+                                new java.io.ByteArrayInputStream(message.getBytes(StandardCharsets.UTF_8)));
+                    }
+                }
+                return assetLoader.shouldInterceptRequest(uri);
             }
 
             @Override
